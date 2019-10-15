@@ -11,7 +11,10 @@ import {
   ComponentStyle,
 } from './global/typing';
 import {
-  AzTreeItem,
+  IAzTreeItem,
+} from './components/tree/az-tree-item';
+import {
+  IAzTreeItem as IAzTreeItem1,
 } from './components/tree/az-tree-item';
 
 export namespace Components {
@@ -43,6 +46,10 @@ export namespace Components {
   interface AzDialog {
     'caption': string;
     'fixed': boolean;
+  }
+  interface AzFileExplorer {
+    'caption': string;
+    'rootDir': string;
   }
   interface AzIcon {
     'color': string;
@@ -114,10 +121,18 @@ export namespace Components {
     'trigger': 'hover' | 'click' | 'manual';
   }
   interface AzTree {
-    'addItem': (itemOrCaption: string | AzTreeItem, parent?: number | AzTreeItem, attrs?: any) => Promise<AzTreeItem>;
+    'addItem': (item: IAzTreeItem) => Promise<void>;
     'caption': string;
-    'roots': AzTreeItem[];
+    'removeItem': (index: number) => Promise<void>;
     'selecting': boolean;
+  }
+  interface AzTreeItem {
+    'addItem': (item: IAzTreeItem) => Promise<void>;
+    'caption': string;
+    'getItems': (index?: number) => Promise<HTMLAzTreeItemElement | NodeListOf<HTMLAzTreeItemElement>>;
+    'icon': string;
+    'removeItem': (index: number) => Promise<void>;
+    'selected': false;
   }
 }
 
@@ -152,6 +167,12 @@ declare global {
   var HTMLAzDialogElement: {
     prototype: HTMLAzDialogElement;
     new (): HTMLAzDialogElement;
+  };
+
+  interface HTMLAzFileExplorerElement extends Components.AzFileExplorer, HTMLStencilElement {}
+  var HTMLAzFileExplorerElement: {
+    prototype: HTMLAzFileExplorerElement;
+    new (): HTMLAzFileExplorerElement;
   };
 
   interface HTMLAzIconElement extends Components.AzIcon, HTMLStencilElement {}
@@ -237,12 +258,19 @@ declare global {
     prototype: HTMLAzTreeElement;
     new (): HTMLAzTreeElement;
   };
+
+  interface HTMLAzTreeItemElement extends Components.AzTreeItem, HTMLStencilElement {}
+  var HTMLAzTreeItemElement: {
+    prototype: HTMLAzTreeItemElement;
+    new (): HTMLAzTreeItemElement;
+  };
   interface HTMLElementTagNameMap {
     'az-button': HTMLAzButtonElement;
     'az-checkbox': HTMLAzCheckboxElement;
     'az-color-picker': HTMLAzColorPickerElement;
     'az-context-menu': HTMLAzContextMenuElement;
     'az-dialog': HTMLAzDialogElement;
+    'az-file-explorer': HTMLAzFileExplorerElement;
     'az-icon': HTMLAzIconElement;
     'az-input': HTMLAzInputElement;
     'az-menu-item': HTMLAzMenuItemElement;
@@ -257,6 +285,7 @@ declare global {
     'az-toolbar-button': HTMLAzToolbarButtonElement;
     'az-tooltip': HTMLAzTooltipElement;
     'az-tree': HTMLAzTreeElement;
+    'az-tree-item': HTMLAzTreeItemElement;
   }
 }
 
@@ -292,6 +321,10 @@ declare namespace LocalJSX {
     'caption'?: string;
     'fixed'?: boolean;
     'onClosed'?: (event: CustomEvent<any>) => void;
+  }
+  interface AzFileExplorer {
+    'caption'?: string;
+    'rootDir'?: string;
   }
   interface AzIcon {
     'color'?: string;
@@ -370,8 +403,12 @@ declare namespace LocalJSX {
     'onExpanded'?: (event: CustomEvent<any>) => void;
     'onInserted'?: (event: CustomEvent<any>) => void;
     'onSelected'?: (event: CustomEvent<any>) => void;
-    'roots'?: AzTreeItem[];
     'selecting'?: boolean;
+  }
+  interface AzTreeItem {
+    'caption'?: string;
+    'icon'?: string;
+    'selected'?: false;
   }
 
   interface IntrinsicElements {
@@ -380,6 +417,7 @@ declare namespace LocalJSX {
     'az-color-picker': AzColorPicker;
     'az-context-menu': AzContextMenu;
     'az-dialog': AzDialog;
+    'az-file-explorer': AzFileExplorer;
     'az-icon': AzIcon;
     'az-input': AzInput;
     'az-menu-item': AzMenuItem;
@@ -394,6 +432,7 @@ declare namespace LocalJSX {
     'az-toolbar-button': AzToolbarButton;
     'az-tooltip': AzTooltip;
     'az-tree': AzTree;
+    'az-tree-item': AzTreeItem;
   }
 }
 
@@ -408,6 +447,7 @@ declare module "@stencil/core" {
       'az-color-picker': LocalJSX.AzColorPicker & JSXBase.HTMLAttributes<HTMLAzColorPickerElement>;
       'az-context-menu': LocalJSX.AzContextMenu & JSXBase.HTMLAttributes<HTMLAzContextMenuElement>;
       'az-dialog': LocalJSX.AzDialog & JSXBase.HTMLAttributes<HTMLAzDialogElement>;
+      'az-file-explorer': LocalJSX.AzFileExplorer & JSXBase.HTMLAttributes<HTMLAzFileExplorerElement>;
       'az-icon': LocalJSX.AzIcon & JSXBase.HTMLAttributes<HTMLAzIconElement>;
       'az-input': LocalJSX.AzInput & JSXBase.HTMLAttributes<HTMLAzInputElement>;
       'az-menu-item': LocalJSX.AzMenuItem & JSXBase.HTMLAttributes<HTMLAzMenuItemElement>;
@@ -422,6 +462,7 @@ declare module "@stencil/core" {
       'az-toolbar-button': LocalJSX.AzToolbarButton & JSXBase.HTMLAttributes<HTMLAzToolbarButtonElement>;
       'az-tooltip': LocalJSX.AzTooltip & JSXBase.HTMLAttributes<HTMLAzTooltipElement>;
       'az-tree': LocalJSX.AzTree & JSXBase.HTMLAttributes<HTMLAzTreeElement>;
+      'az-tree-item': LocalJSX.AzTreeItem & JSXBase.HTMLAttributes<HTMLAzTreeItemElement>;
     }
   }
 }

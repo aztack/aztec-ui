@@ -173,7 +173,7 @@
       <az-icon icon="zoom-out" title="zoom-out"></az-icon>
     </az-section>
     <az-section caption="Tree">
-      <az-tree />
+      <az-tree id="tree1" />
     </az-section>
     <az-section caption="Toolbar">
       <az-toolbar-button icon="triangle"></az-toolbar-button>
@@ -259,14 +259,16 @@
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', async () => {
       const tree = document.querySelector('az-tree');
-      await tree.addItem('Colors', null, {icon: 'fort'});
-      const red = await tree.addItem('Red', 0);
-      await tree.addItem('Orange', 0);
-      await tree.addItem('Yellow', 0);
-      await tree.addItem('Green', 0);
-      await tree.addItem('Blue', 0);
-      await tree.addItem('Purple', 0);
-      await red.addItem('Ruby');
+      await tree.addItem({caption: 'Colors', icon:'fort'});
+      await tree.addItem({caption: 'Red', icon: 'check'});
+      await tree.addItem({caption: 'Orange', icon: 'book'});
+      await tree.addItem({caption: 'Yellow', icon: 'copy'});
+      await tree.addItem({caption: 'Green'});
+      await tree.addItem({caption: 'Blue'});
+      await tree.addItem({caption: 'Purple'});
+      debugger
+      const red = await tree.getItems(0);
+      await red.addItem({caption: 'Ruby'});
       setTimeout(() => {
         loadingBtn.icon = 'check';
         loadingBtn.round = true;

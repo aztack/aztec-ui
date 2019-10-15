@@ -26,7 +26,7 @@
     "gen-comp": "node bin/gen-comp.js"
   },
   "devDependencies": {
-    "@stencil/core": "^1.5.3",
+    "@stencil/core": "^1.7.1",
     "@stencil/stylus": "^1.0.0",
     "@types/jest": "24.0.18",
     "@types/puppeteer": "1.19.1",
