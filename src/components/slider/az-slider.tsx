@@ -19,7 +19,7 @@ export class AzSlider {
 
   @Inject({
     attrs: true,
-    remove: true
+    remove: false
   })
   componentDidLoad() {
     this.input.addEventListener('change', () => {
@@ -41,7 +41,7 @@ export class AzSlider {
       <slot name="after"></slot>,
     ];
     if (this.caption) {
-      vdom.unshift(<span class="az-slider-caption az-caption">{this.caption}</span>);
+      vdom.unshift(<span class="az-slider__caption az-caption">{this.caption}</span>);
     }
     return vdom;
   }
