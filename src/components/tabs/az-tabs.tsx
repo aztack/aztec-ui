@@ -1,6 +1,5 @@
 import { Component, Prop, Element, Watch, Host, h, Method, Event, EventEmitter} from '@stencil/core';
 import { Inject } from '../../utils/utils';
-import { HostElement } from '@stencil/core/dist/declarations';
 
 export type TabItemConfig  = {
   caption?: string | '';
@@ -13,7 +12,7 @@ export type TabItemConfig  = {
   shadow: false
 })
 export class AzTabs {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop() items: TabItemConfig[] = [];
   @Prop({attribute: 'active-index'}) activeIndex: number = 0;
@@ -46,8 +45,8 @@ export class AzTabs {
     attrs: false,
     parse: true
   })
-  connectedCallback(){
-    this.el.componentOnReady().then(() => this.onActiveIndexChanged(this.activeIndex, 0));
+  connectedCallback() {
+    this.onActiveIndexChanged(this.activeIndex, 0);
   }
 
   @Method()
@@ -57,20 +56,20 @@ export class AzTabs {
       cfg.caption = it;
     }
     this.items = [...this.items, cfg];
-    this.el.forceUpdate();
+    this.render();
   }
 
   @Method()
   async removeItem(caption: string) {
     const pos = this.items.findIndex(item => item.caption === caption);
     this.items.splice(pos, 1);
-    this.el.forceUpdate();
+    this.render();
   }
 
   @Method()
   async removeItemAt(index: number) {
     this.items.splice(index, 1);
-    this.el.forceUpdate();
+    this.render();
   }
 
   closeItem(index: number) {

@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h, Method } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject } from '../../utils/utils';
 import { ComponentStyle } from '../../global/typing';
 
@@ -9,7 +8,7 @@ import { ComponentStyle } from '../../global/typing';
   shadow: false
 })
 export class AzRadio {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) type: ComponentStyle = 'plain';

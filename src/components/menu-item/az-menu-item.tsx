@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { ComponentStyle } from '../../global/typing';
 
 @Component({
@@ -8,7 +7,7 @@ import { ComponentStyle } from '../../global/typing';
   shadow: false
 })
 export class AzMenuItem {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop() caption: string = '';
   @Prop() icon: string = '';

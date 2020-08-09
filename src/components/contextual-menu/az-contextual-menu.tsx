@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject } from '../../utils/utils';
 
 @Component({
@@ -8,7 +7,7 @@ import { Inject } from '../../utils/utils';
   shadow: false
 })
 export class AzContextMenu {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) triggerevent: string = 'contextmenu';

@@ -1,5 +1,4 @@
 import { Component, Prop, Element, h, Host } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 
 @Component({
   tag: 'az-progress-bar',
@@ -7,7 +6,7 @@ import { HostElement } from '@stencil/core/dist/declarations';
   shadow: false
 })
 export class AzProgressBar {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop() caption: string = '';
   @Prop({reflect: true}) value: number = 50;

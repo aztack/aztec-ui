@@ -1,6 +1,5 @@
 import { Component, Prop, Element, h, Watch, Host, Method} from '@stencil/core';
 import { Inject, isNumber } from '../../utils/utils';
-import { HostElement } from '@stencil/core/dist/declarations';
 
 type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
 @Component({
@@ -9,7 +8,7 @@ type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
   shadow: false
 })
 export class AzInput {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
   @Prop() caption: string = '';
   @Prop() type: string = '';
   @Prop() value: string = '';

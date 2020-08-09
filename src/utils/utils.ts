@@ -1,5 +1,3 @@
-import { HostElement } from "@stencil/core/dist/declarations";
-
 const HTMLInputElementSpecialAttrs = ['value', 'autocomplete', 'autocorrect', 'autocapitalize', 'spellcheck'];
 
 export function copyAttributes(src: HTMLElement, dest: HTMLElement, excludes?: string[], remove?: boolean) {
@@ -25,7 +23,7 @@ exportToGlobal('IgnoredAttrsWhenMigrateAttributes', {
   }
 });
 
-export function migrateAttributes(host: HostElement, remove = false, keepAttrs: string[] = null) {
+export function migrateAttributes(host: HTMLElement, remove = false, keepAttrs: string[] = null) {
   if (!keepAttrs) {
     keepAttrs = IgnoredAttrsWhenMigrateAttributes.slice(0);
   } else {
@@ -35,7 +33,7 @@ export function migrateAttributes(host: HostElement, remove = false, keepAttrs: 
   return copyAttributes(host, (host.shadowRoot || host).lastElementChild, keepAttrs, remove);
 }
 
-export function moveChildren(host: HostElement, filters?: Function[]) {
+export function moveChildren(host: HTMLElement, filters?: Function[]) {
   const ele = (host.shadowRoot || host).lastElementChild;
   for (let i = host.children.length; i >= 0; i--) {
     const opt = host.children[i];
@@ -63,7 +61,7 @@ export function decamelize(str){
         .toLowerCase();
 }
 
-export function parseArrayObjectAttr(ctx: any, host: HostElement) {
+export function parseArrayObjectAttr(ctx: any, host: HTMLElement) {
   const keys = Object.keys(ctx.constructor.prototype);
   keys.forEach(k => {
     const hypenized = decamelize(k);
@@ -74,7 +72,7 @@ export function parseArrayObjectAttr(ctx: any, host: HostElement) {
   });
 }
 
-export function injectCustomStyleFor(host: HostElement) {
+export function injectCustomStyleFor(host: HTMLElement) {
   if (!host || !host.shadowRoot) return;
   const tag = host.tagName.toLowerCase();
   const selector = `#${tag}-custom-style`;
@@ -84,7 +82,7 @@ export function injectCustomStyleFor(host: HostElement) {
   host.shadowRoot.prepend(style.cloneNode(true));
 }
 
-export function remount(host: HostElement, destSelector: string) {
+export function remount(host: HTMLElement, destSelector: string) {
   const dest = document.querySelector(destSelector);
   if (!dest) throw new Error(`Can not find '${destSelector}'`);
   dest.appendChild(host);

@@ -1,5 +1,4 @@
 import { Component, Prop, Element, h, Host, Event, EventEmitter, Method } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { draggable } from '../../utils/draggable';
 import { exportToGlobal, Inject } from '../../utils/utils';
 
@@ -54,7 +53,7 @@ export class AzDialog {
   }
   static getDefaultButtonConfig = getDefaultButtons;
   static getDefaultCreateOptions = getDefaultDialogCreateOptions;
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) content: string = '';

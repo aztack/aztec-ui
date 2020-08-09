@@ -35,17 +35,11 @@
     "patch": "npm --no-git-tag-version version patch",
     "postversion": "node bin/gen-version.js && npm run build"
   },
-  "devDependencies": {
-    "@stencil/core": "^1.5.3",
-    "@stencil/stylus": "^1.0.0",
-    "@types/jest": "24.0.18",
-    "@types/puppeteer": "1.19.1",
-    "jest": "24.8.0",
-    "jest-cli": "24.8.0",
-    "puppeteer": "1.19.0"
-  },
+  "devDependencies": {},
   "license": "MIT",
   "dependencies": {
+    "@stencil/core": "^1.17.3",
+    "@stencil/stylus": "^1.0.1",
     "color-convert": "^2.0.1",
     "parse-color": "^1.0.0"
   }

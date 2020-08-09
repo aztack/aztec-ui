@@ -1,6 +1,5 @@
 
 import { Component, Prop, Element, h, Watch } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject } from '../../utils/utils';
 
 @Component({
@@ -9,7 +8,7 @@ import { Inject } from '../../utils/utils';
   shadow: false
 })
 export class AzSlider {
-  @Element() el: HostElement;
+  @Element() el: Element;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop() value: string | number = '50';

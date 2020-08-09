@@ -1,5 +1,4 @@
 import { Component, Element, Prop, Host, h, Event, EventEmitter, Method} from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject } from '../../utils/utils';
 
 @Component({
@@ -8,7 +7,7 @@ import { Inject } from '../../utils/utils';
   shadow: false
 })
 export class AzCheckbox {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) checked: boolean = false;
   @Prop({reflect: true}) indeterminate: boolean = false;

@@ -1,6 +1,5 @@
 import { Component, Element, h } from '@stencil/core';
 import { Inject } from '../../utils/utils';
-import { HostElement } from "@stencil/core/dist/declarations";
 
 @Component({
   tag: 'az-select',
@@ -8,7 +7,7 @@ import { HostElement } from "@stencil/core/dist/declarations";
   shadow: false
 })
 export class AzSelect {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
   @Inject({children: [HTMLOptionElement, HTMLOptGroupElement]})
 
   componentDidLoad() {

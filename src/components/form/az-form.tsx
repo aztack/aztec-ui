@@ -1,5 +1,4 @@
-import { Component, Prop, Element, h, Method } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
+import { Component, Prop, Element, Host, h, Method } from '@stencil/core';
 import { Inject, set, isNumber, capitalize, decamelize, isPlainObject } from '../../utils/utils';
 import parseColor from 'parse-color';
 
@@ -17,7 +16,7 @@ export interface IFormItem {
   shadow: false
 })
 export class AzForm {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) labelPosition: 'left' | 'right' | 'top' = 'left';

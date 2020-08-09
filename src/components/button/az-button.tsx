@@ -1,6 +1,5 @@
 import { Component, Prop, Element, h } from '@stencil/core';
 import { ComponentStyle, ComponentSize, PositionHorizontal } from '../../global/typing';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject } from '../../utils/utils';
 
 @Component({
@@ -9,7 +8,7 @@ import { Inject } from '../../utils/utils';
   shadow: false
 })
 export class AzButton {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
   /**
    * Button type
    */

@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h, Method } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { Inject, exportToGlobal } from '../../utils/utils';
 import { ComponentStyle, Placement } from '../../global/typing';
 
@@ -62,7 +61,7 @@ export class AzNotification {
     let mergedOpts = Object.assign(getDefaultNotificationCreateOptions(), opts);
     return appendToPlacmentContainer(opts.placement, Object.assign(noti, mergedOpts));
   }
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop() message: string = '';

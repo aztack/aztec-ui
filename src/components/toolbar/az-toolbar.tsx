@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, h } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 
 @Component({
   tag: 'az-toolbar',
@@ -7,7 +6,7 @@ import { HostElement } from '@stencil/core/dist/declarations';
   shadow: false
 })
 export class AzToolbar {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop() caption: string = '';
   @Prop() direction: string = 'horizontal';

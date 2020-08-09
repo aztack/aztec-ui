@@ -1,5 +1,4 @@
 import { Component, Prop, Element, h, Event, EventEmitter, Method } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { ComponentStyle, ComponentSize } from '../../global/typing';
 
 @Component({
@@ -8,7 +7,7 @@ import { ComponentStyle, ComponentSize } from '../../global/typing';
   shadow: false
 })
 export class AzSwitch {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) type: ComponentStyle = 'primary';

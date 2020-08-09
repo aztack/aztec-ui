@@ -1,6 +1,5 @@
 
 import { Component, Prop, Element, Host, h, Watch, State, Event, EventEmitter } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import parseColor from 'parse-color';
 import colorConvert from 'color-convert';
 import { Inject } from '../../utils/utils';
@@ -14,7 +13,7 @@ const ColorFormat = ['hex', 'hsl', 'rgb'];
 })
 export class AzColorPicker {
   static defaultColor: string = '#ff0000';
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   colorfmtIndex: number = 0;
 
@@ -93,7 +92,7 @@ export class AzColorPicker {
 
     this.strawLeft = confine(x, 0, rect.width);
     this.strawTop = confine(y, 0, rect.height);
-    this.el.forceUpdate();
+    this.render();
     this.calcColorString();
     this.changed.emit(this._color);
   }

@@ -37,7 +37,7 @@ export class AzTreeItem {
     } else {
       this.tree.collapsed.emit(this);
     }
-    this.tree.el.forceUpdate();
+    this.tree.render();
   }
 
   fromJson(item: IAzTreeItem, tree: AzTree, level: number) {
@@ -69,7 +69,7 @@ export class AzTreeItem {
         const deleted = this.tree.roots.splice(pos, 1);
         this.tree.checkedItems.delete(deleted[0]);
       }
-      this.tree.el.forceUpdate();
+      this.tree.render();
     }
   }
 
@@ -83,7 +83,7 @@ export class AzTreeItem {
   removeItemAt(index: number) {
     const deleted = this.items.splice(index, 1);
     if (deleted.length) this.tree.checkedItems.delete(deleted[0]);
-    this.tree.el.forceUpdate();
+    this.tree.render();
   }
 
   toggle(e: MouseEvent) {

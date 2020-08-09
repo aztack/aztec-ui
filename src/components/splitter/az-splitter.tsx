@@ -1,5 +1,4 @@
 import { Component, Prop, Element, Host, h } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { draggable } from '../../utils/draggable';
 
 const minMaxReg = /^([0-9]+%) ([0-9]+px)$|^([0-9]+px) ([0-9]+%)$|^([0-9]+%)$|^([0-9]+px)$/;
@@ -9,7 +8,7 @@ const minMaxReg = /^([0-9]+%) ([0-9]+px)$|^([0-9]+px) ([0-9]+%)$|^([0-9]+%)$|^([
   shadow: false
 })
 export class AzSpliter {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) direction: 'horizontal' | 'vertical' = 'vertical';
   @Prop({reflect: true}) disabled: boolean = false;

@@ -1,6 +1,5 @@
 
 import { Component, Prop, Element, h, Method, Host, Event, EventEmitter } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 import { IAzTreeItem, AzTreeItem } from './az-tree-item';
 import { Inject } from '../../utils/utils';
 
@@ -10,7 +9,7 @@ import { Inject } from '../../utils/utils';
   shadow: false
 })
 export class AzTree {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) selecting: boolean = false;
   @Prop() roots: AzTreeItem[] = [];
@@ -51,7 +50,7 @@ export class AzTree {
     item.parent = parent;
     item.level = parent.level + 1;
     parent.items = [...parent.items, item];
-    this.el.forceUpdate();
+    this.render();
     this.inserted.emit(item);
     return item;
   }

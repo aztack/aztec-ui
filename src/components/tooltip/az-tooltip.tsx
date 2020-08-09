@@ -1,5 +1,4 @@
 import { Component, Prop, Element, h, Host } from '@stencil/core';
-import { HostElement } from '@stencil/core/dist/declarations';
 
 @Component({
   tag: 'az-tooltip',
@@ -7,7 +6,7 @@ import { HostElement } from '@stencil/core/dist/declarations';
   shadow: false
 })
 export class AzTooltip {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({reflect: true}) placement: 'top' | 'bottom' | 'left' | 'right' = 'top';
   @Prop({reflect: true}) caption: string = '';
