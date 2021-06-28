@@ -47,15 +47,17 @@ export class AzButton {
     }
     if (this.size === 'extra-small') {
       iconLeft = iconRight = null;
-      console.warn(`<az-button size="extra-small" /> can not have icon`);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`<az-button size="extra-small" /> is too small to show an icon`);
+      }
     }
-    if (!this.caption && !this.icon) {
+    if (!this.caption && !this.icon && process.env.NODE_ENV === 'development') {
       console.warn(`<az-button> requires a caption or an icon`);
     }
-    if (this.circle && !this.icon) {
+    if (this.circle && !this.icon && process.env.NODE_ENV === 'development') {
       console.warn(`<az-button circle="true" icon="..."/> requires an icon`);
     }
-    if (this.circle && this.size.indexOf('small') >= 0) {
+    if (this.circle && this.size.indexOf('small') >= 0 && process.env.NODE_ENV === 'development') {
       console.warn(`<az-button> can not be circle if size is small or extra-small`);
     }
 
