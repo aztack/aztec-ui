@@ -35,10 +35,13 @@
     "patch": "npm --no-git-tag-version version patch",
     "postversion": "node bin/gen-version.js && npm run build"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^15.12.4",
+    "@types/parse-color": "^1.0.0"
+  },
   "license": "MIT",
   "dependencies": {
-    "@stencil/core": "^1.17.3",
+    "@stencil/core": "^2.6.0",
     "@stencil/stylus": "^1.0.1",
     "color-convert": "^2.0.1",
     "parse-color": "^1.0.0"
