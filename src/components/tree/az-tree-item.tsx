@@ -1,6 +1,5 @@
-import { h } from '@stencil/core';
+import { forceUpdate, h } from '@stencil/core';
 import { AzTree } from './az-tree';
-
 export interface IAzTreeItem {
   caption: string;
   icon?: string;
@@ -9,9 +8,12 @@ export interface IAzTreeItem {
   level?: number;
   data?: any;
   html?: string;
+  parent: IAzTreeItem;
   items: IAzTreeItem[];
 }
-export class AzTreeItem {
+
+export class AzTreeItem implements IAzTreeItem {
+  el: HTMLElement;
   caption: string = '';
   icon: string = '';
   selected: boolean = false;
@@ -26,6 +28,7 @@ export class AzTreeItem {
 
   html: string = '';
   _expanded: boolean = true;
+  checked: boolean = false;
 
   get expanded() {
     return this._expanded;
@@ -37,22 +40,52 @@ export class AzTreeItem {
     } else {
       this.tree.collapsed.emit(this);
     }
-    this.tree.render();
   }
 
-  fromJson(item: IAzTreeItem, tree: AzTree, level: number) {
+  constructor() {
+    this.addItem = this.addItem.bind(this);
+    this.removeItemAt = this.removeItemAt.bind(this);
+    this.removeItem = this.removeItem.bind(this);
+    this.remove = this.remove.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this._inject = this._inject.bind(this);
+  }
+  fromJson(item: IAzTreeItem, parent: any | AzTree, level: number) {
     Object.assign(this, item);
-    this.tree = tree;
+    this.parent = parent;
+    this.tree = parent instanceof AzTree ? parent : parent.tree;
     if (item.items) {
       this.items = item.items.map(it => {
         const treeItem = new AzTreeItem();
         treeItem.level = level;
-        treeItem.fromJson(it, tree, level + 1);
+        treeItem.fromJson(it, this, level + 1);
         return treeItem;
       });
     }
   }
-
+  get isFirstChild() {
+    return this.parent.items.indexOf(this) === 0;
+  }
+  get isLastChild() {
+    return this.parent.items.indexOf(this) === this.parent.items.length - 1;
+  }
+  get index() {
+    return this.parent.items.indexOf(this);
+  }
+  get firstChild() {
+    return this.items[0];
+  }
+  get lastChild() {
+    return this.items[this.items.length - 1];
+  }
+  get previousSibling() {
+    const index = this.parent.items.indexOf(this);
+    return this.parent.items[index - 1];
+  }
+  get nextSibling() {
+    const index = this.parent.items.indexOf(this);
+    return this.parent.items[index + 1];
+  }
   addItem(item: AzTreeItem | string) {
     if (!this.tree) {
       throw new Error(`No parent tree!`);
@@ -64,13 +97,14 @@ export class AzTreeItem {
     if (this.parent) {
       this.parent.removeItem(this);
     } else {
-      const pos = this.tree.roots.findIndex(it => it === this);
+      const pos = this.tree.items.findIndex(it => it === this);
       if (pos >= 0) {
-        const deleted = this.tree.roots.splice(pos, 1);
+        const deleted = this.tree.items.splice(pos, 1);
         this.tree.checkedItems.delete(deleted[0]);
       }
-      this.tree.render();
+      forceUpdate(this.tree);
     }
+    this.dispose();
   }
 
   removeItem(item: AzTreeItem) {
@@ -82,18 +116,22 @@ export class AzTreeItem {
 
   removeItemAt(index: number) {
     const deleted = this.items.splice(index, 1);
-    if (deleted.length) this.tree.checkedItems.delete(deleted[0]);
-    this.tree.render();
+    if (deleted.length) {
+      this.tree.checkedItems.delete(deleted[0]);
+      deleted[0].dispose();
+    }
+    forceUpdate(this.tree);
   }
 
-  toggle(e: MouseEvent) {
+  toggle(e?: MouseEvent) {
     this.expanded = !this.expanded
-    e.stopPropagation()
+    forceUpdate(this.tree);
+    if (e) e.stopPropagation()
   }
 
-  onCheckboxChecked(e: CustomEvent) {
-    const checked = e.detail;
-    if (checked) {
+  onCheckboxChecked(e: CustomEvent | boolean) {
+    this.checked = typeof e === 'boolean' ? e : e.detail;
+    if (this.checked) {
       this.tree.checkedItems.add(this);
     } else {
       this.tree.checkedItems.delete(this);
@@ -109,15 +147,12 @@ export class AzTreeItem {
       }
       tree.activeItem = this;
       tree.selected.emit(item);
-    } else {
-      this.active = false;
-      tree.activeItem = null;
     }
   }
 
   render() {
     // styles
-    const style: any = {};
+    const style: Record<string, string> = {};
     const cls = {
       'az-tree-item': true,
       expanded: this.expanded,
@@ -126,31 +161,20 @@ export class AzTreeItem {
     }
     if (this.level) style.paddingLeft = `${(this.level) * 12}px`;
 
-    // methods
-    const toggle = this.toggle.bind(this);
-    const self = this;
-    const inject = (el: AzTreeItem) => {
-      if (!el || el.items) return;
-      el.addItem = this.addItem.bind(this);
-      el.removeItemAt = this.removeItemAt.bind(this);
-      el.removeItem = this.removeItem.bind(this);
-      el.remove = this.remove.bind(this);
-      el.toggle = toggle;
-      el.items = self.items;
-    }
-
     // parts
-    const joint = <az-icon class={{joint: true, hide: this.items.length <= 0}} width="9" height="9" icon="triangle" onClick={toggle}></az-icon>;
+    const joint = <az-icon class={{joint: true, hide: this.items.length <= 0}} width="9" height="9" icon="triangle" onClick={this.toggle}></az-icon>;
     const icon = this.icon ? <az-icon icon={this.icon}></az-icon> : null;
-    const checkbox = (this.tree && this.tree.selecting) ? <az-checkbox onChanged={(e) => this.onCheckboxChecked(e)}></az-checkbox> : null;
+    const checkbox = (this.tree && this.tree.selecting) ? <az-checkbox checked={this.checked} onChanged={(e) => this.onCheckboxChecked(e)}></az-checkbox> : null;
     const text = this.html
       ? <span innerHTML={this.html}></span>
       : <span>{this.caption}</span>
+    // TODO:
+    const extra = [];
     // render
     return (
-      <az-tree-item class={cls} data-level={this.level} ref={inject}>
+      <az-tree-item class={cls} data-level={this.level} ref={this._inject}>
         <div class="az-tree-item__caption az-caption"style={style} onClick={() => this.onActivateItem(this)}>
-          {joint}{checkbox}{icon}{text}
+          {joint}{checkbox}{icon}{text}{extra}
         </div>
         <div class="az-tree-item__children">
           {this.items.map((c: AzTreeItem) => c.render())}
@@ -158,4 +182,23 @@ export class AzTreeItem {
       </az-tree-item>
     );
   }
+
+  dispose() {
+    this.el['__$stencil'] = null;
+    this.el = null;
+  }
+
+  private _inject(el: AzTreeItem) {
+    if (!el || el.items) return;
+    // @ts-ignore
+    this.el = el;
+    el['__stencil'] = this;
+    el.addItem = this.addItem;
+    el.removeItemAt = this.removeItemAt;
+    el.removeItem = this.removeItem;
+    el.remove = this.remove;
+    el.toggle = this.toggle;
+    el.items = this.items;
+  }
+
 }
