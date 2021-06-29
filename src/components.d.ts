@@ -83,6 +83,7 @@ export namespace Components {
         "height": number | string;
         "icon": string;
         "register": boolean;
+        "svgAttr": Record<string, string>;
         "width": number | string;
     }
     interface AzInput {
@@ -195,10 +196,12 @@ export namespace Components {
         "addItem": (itemOrCaption: AzTreeItem | string, parent?: AzTreeItem | number, attrs?: any) => Promise<AzTreeItem>;
         "caption": string;
         "checkedItems": Set<AzTreeItem>;
+        "clearActiveItem": () => Promise<void>;
         "fromJson": (items: IAzTreeItem[]) => Promise<void>;
+        "items": AzTreeItem[];
         "removeItem": (index: number) => Promise<void>;
-        "roots": AzTreeItem[];
         "selecting": boolean;
+        "setActiveItem": (item: AzTreeItem, clear?: boolean) => Promise<void>;
     }
 }
 declare global {
@@ -434,6 +437,7 @@ declare namespace LocalJSX {
         "height"?: number | string;
         "icon"?: string;
         "register"?: boolean;
+        "svgAttr"?: Record<string, string>;
         "width"?: number | string;
     }
     interface AzInput {
@@ -540,11 +544,11 @@ declare namespace LocalJSX {
         "activeItem"?: AzTreeItem;
         "caption"?: string;
         "checkedItems"?: Set<AzTreeItem>;
+        "items"?: AzTreeItem[];
         "onCollapsed"?: (event: CustomEvent<any>) => void;
         "onExpanded"?: (event: CustomEvent<any>) => void;
         "onInserted"?: (event: CustomEvent<any>) => void;
         "onSelected"?: (event: CustomEvent<any>) => void;
-        "roots"?: AzTreeItem[];
         "selecting"?: boolean;
     }
     interface IntrinsicElements {
