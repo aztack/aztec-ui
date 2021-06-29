@@ -2,7 +2,8 @@
 import { Component, Prop, Element, Host, h, Watch, State, Event, EventEmitter } from '@stencil/core';
 import parseColor from 'parse-color';
 import colorConvert from 'color-convert';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
+import { nextTick } from '../../utils/next-tick';
 
 const ColorFormat = ['hex', 'hsl', 'rgb'];
 
@@ -32,12 +33,12 @@ export class AzColorPicker {
   @State() hue: number = 0;
   @State() saturation: number = 1
   @State() value: number = 1;
-  @State()_color: string = this.color;
+  @State() _color: string = this.color;
 
   @Event() changed: EventEmitter;
 
   panel: HTMLDivElement;
-  input: HTMLInputElement;
+  input: HTMLAzInputElement;
 
   constructor() {
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -49,15 +50,15 @@ export class AzColorPicker {
   componentDidLoad() {
     document.addEventListener('mousemove', this.onMouseMove);
     document.addEventListener('mouseup', this.onMouseUp);
-
-    this.parseCssString(this.color || AzColorPicker.defaultColor);
-    this.format(true, true);
+    nextTick(() => {
+      this.parseCssString(this.color || AzColorPicker.defaultColor);
+      this.format(true, true);
+    });
   }
 
   @Watch('color')
   onValueChange(newValue, oldValue) {
     if (oldValue !== newValue) {
-      console.log(newValue, oldValue);
       this.parseCssString(newValue);
       this.format(true);
     }
@@ -84,6 +85,7 @@ export class AzColorPicker {
   }
 
   update(e: MouseEvent) {
+    // TOOD: cache rect and observer resize
     const rect = this.panel.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -112,14 +114,18 @@ export class AzColorPicker {
   }
 
   onHueChange(e: Event) {
-    this.hue = parseInt((e.target as HTMLInputElement).value, 10);
+    const val = parseInt((e.target as HTMLInputElement).value, 10)
+    if (this.hue === val) return;
+    this.hue = val;
     this.curColor = this.getColorHex(false, this.hue, 100, 100);
     this.calcColorString();
     this.changed.emit(this._color);
   }
 
-  onTransparentcyChange(e: Event) {
-    this.transparency = parseInt((e.target as HTMLInputElement).value, 10);
+  onTransparencyChange(e: Event) {
+    const val = parseInt((e.target as HTMLInputElement).value, 10);
+    if (this.transparency === val) return;
+    this.transparency = val;
     this.calcColorString();
     this.changed.emit(this._color);
   }
@@ -130,8 +136,8 @@ export class AzColorPicker {
     this.format(true, true);
   }
 
-  getColorHex(withTransparentcy = false, hue = this.hue, sat = this.saturation, val = this.value) {
-    const a = withTransparentcy ? (Math.floor(255 * this.transparency / 100)).toString(16) : '';
+  getColorHex(withTransparency = false, hue = this.hue, sat = this.saturation, val = this.value) {
+    const a = withTransparency ? (Math.floor(255 * this.transparency / 100)).toString(16) : '';
     const aa = (a.length > 1 ) ? a : `0${a}`;
     return '#' + colorConvert.hsv.hex(hue, sat, val).toLowerCase() + ((aa === '0' || aa === 'ff') ? '' : aa);
   }
@@ -139,8 +145,7 @@ export class AzColorPicker {
   parseCssString(str: string) {
     const result = parseColor(str);
     if (!result.hsv) {
-      // @ts-ignore
-      this.input.native.value = this._color;
+      this.input.querySelector('input').value = this._color;
       return;
     }
     // basic color information
@@ -191,8 +196,7 @@ export class AzColorPicker {
   }
 
   selectAll(e: MouseEvent) {
-    // @ts-ignore
-    this.input.native.select();
+    this.input.querySelector('input').select();
     if (e.metaKey || e.ctrlKey) {
       document.execCommand('copy');
     }
@@ -208,8 +212,8 @@ export class AzColorPicker {
           <div class="az-color-picker_straw" style={{left: `${this.strawLeft}px`, top: `${this.strawTop}px`}}></div>
         </div>
         <div>
-          <az-slider class="spectrum-h" min="0" max="360" value={this.hue} onInput={(e) => this.onHueChange(e)}></az-slider>
-          <az-slider class="checkerboard" min="0" max="100" value={this.transparency} onInput={(e) => this.onTransparentcyChange(e)}></az-slider>
+          <az-slider class="spectrum-h" min="0" max="360" onInput={(e) => {this.onHueChange(e)}}></az-slider>
+          <az-slider class="checkerboard" min="0" max="100" onInput={(e) => this.onTransparencyChange(e)}></az-slider>
           <div class="az-color-picker_value" style={{display: this.showinput ? '' : 'none'}}>
             <span class="az-color-picker_current-color"
               onClick={() => this.nextFormat()}>

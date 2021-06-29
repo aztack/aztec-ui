@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Watch, Host, h, Method, Event, EventEmitter, forceUpdate} from '@stencil/core';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
 import { HostElement } from '@stencil/core/internal';
 
 export type TabItemConfig  = {
@@ -15,7 +15,7 @@ export type TabItemConfig  = {
 export class AzTabs {
   @Element() el: HostElement;
 
-  @Prop() items: TabItemConfig[] = [];
+  @Prop({mutable: true}) items: TabItemConfig[] = [];
   @Prop({attribute: 'active-index'}) activeIndex: number = 0;
   @Prop({reflect: true}) indicator: boolean = true;
 

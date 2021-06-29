@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h, Method } from '@stencil/core';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
 import { ComponentStyle } from '../../global/typing';
 
 @Component({

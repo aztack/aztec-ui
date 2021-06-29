@@ -16,6 +16,7 @@ export class AzToolbar {
   render() {
     return (
       <Host class={`az-toolbar ${this.direction}`}>
+        <slot></slot>
       </Host>
     );
   }

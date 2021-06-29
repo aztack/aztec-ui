@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h, Method } from '@stencil/core';
-import { Inject, exportToGlobal } from '../../utils/utils';
+import { Inject, exportToGlobal } from '../../utils';
 import { ComponentStyle, Placement } from '../../global/typing';
 
 export type NotificationCreateOptions = {
@@ -66,7 +66,7 @@ export class AzNotification {
   @Prop({reflect: true}) caption: string = '';
   @Prop() message: string = '';
   @Prop({reflect: true}) type: ComponentStyle = 'primary';
-  @Prop({reflect: true}) icon: string = '';
+  @Prop({reflect: true, mutable: true}) icon: string = '';
   @Prop({reflect: true}) placement: Placement = 'top-right';
   @Prop({reflect: true}) timeout: number = 3000;
   @Prop({reflect: true}) indicator: boolean = true;
@@ -79,9 +79,12 @@ export class AzNotification {
   @Event() showed: EventEmitter;
   @Event() closed: EventEmitter;
 
+  componentWillLoad() {
+    this.setIcon();
+  }
+
   @Inject({})
   componentDidLoad() {
-    this.setIcon();
     this.close = this.close.bind(this);
     if (!isNaN(this.timeout) && this.timeout !== Infinity && this.timeout >= 0) {
       window.setTimeout(this.close, this.timeout);

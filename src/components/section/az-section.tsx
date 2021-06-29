@@ -1,5 +1,5 @@
 import { Component, Prop, Element, h, Method } from '@stencil/core';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
 
 @Component({
   tag: 'az-section',

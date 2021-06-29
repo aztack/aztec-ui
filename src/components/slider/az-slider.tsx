@@ -1,6 +1,6 @@
 
 import { Component, Prop, Element, h, Watch } from '@stencil/core';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
 
 @Component({
   tag: 'az-slider',
@@ -11,9 +11,9 @@ export class AzSlider {
   @Element() el: Element;
 
   @Prop({reflect: true}) caption: string = '';
-  @Prop() value: string | number = '50';
-  @Prop({reflect: true}) min: string | number = 0;
-  @Prop({reflect: true}) max: string | number = 100;
+  @Prop({reflect: true, mutable: true}) value: string | number;
+  @Prop({reflect: true, mutable: true}) min: string | number;
+  @Prop({reflect: true, mutable: true}) max: string | number;
 
   input: HTMLInputElement;
 
@@ -28,8 +28,8 @@ export class AzSlider {
   }
 
   @Watch('value')
-  onValueChange(newValue, oldValue) {
-    if (oldValue !== newValue) {
+  onValueChange(newValue: string, oldValue: any) {
+    if (this.input && oldValue != newValue) {
       this.input.value = newValue;
     }
   }

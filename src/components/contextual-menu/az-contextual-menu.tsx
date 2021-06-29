@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Host, Event, EventEmitter, h } from '@stencil/core';
-import { Inject } from '../../utils/utils';
+import { Inject } from '../../utils';
 
 @Component({
   tag: 'az-contextual-menu',
@@ -13,7 +13,7 @@ export class AzContextMenu {
   @Prop({reflect: true}) triggerevent: string = 'contextmenu';
   @Prop({reflect: true}) closeevent: string = '';
   @Prop({reflect: true}) parent: string = 'body';
-  @Prop({reflect: true}) popupalign: string = '';
+  @Prop({reflect: true, mutable: true}) popupalign: string = 'bottom left';
   @Prop({reflect: true}) closedelay: number = 500;
 
   @Event() showed: EventEmitter;
@@ -53,7 +53,6 @@ export class AzContextMenu {
       parent.appendChild(this.el);
     } else {
       parent.style.position = 'relative';
-      if (!this.popupalign) this.popupalign = 'bottom left';
     }
   }
 

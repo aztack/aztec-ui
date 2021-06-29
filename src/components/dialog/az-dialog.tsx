@@ -1,6 +1,6 @@
 import { Component, Prop, Element, h, Host, Event, EventEmitter, Method } from '@stencil/core';
 import { draggable } from '../../utils/draggable';
-import { exportToGlobal, Inject } from '../../utils/utils';
+import { exportToGlobal, Inject } from '../../utils';
 
 export type ButtonConfig = {
   caption: string;

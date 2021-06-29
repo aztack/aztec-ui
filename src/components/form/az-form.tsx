@@ -1,5 +1,5 @@
-import { Component, Prop, Element, Host, h, Method } from '@stencil/core';
-import { Inject, set, isNumber, capitalize, decamelize, isPlainObject } from '../../utils/utils';
+import { Component, Prop, Element, h, Method } from '@stencil/core';
+import { Inject, set, isNumber, capitalize, decamelize, isPlainObject } from '../../utils';
 import parseColor from 'parse-color';
 
 export interface IFormItem {
@@ -20,7 +20,7 @@ export class AzForm {
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) labelPosition: 'left' | 'right' | 'top' = 'left';
-  @Prop() items: IFormItem[] = [];
+  @Prop({mutable: true}) items: IFormItem[] = [];
 
   @Inject({
     parse: true,

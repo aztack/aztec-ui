@@ -1,5 +1,6 @@
 import { Component, Prop, Element, h, Watch, Host, Method} from '@stencil/core';
-import { Inject, isNumber } from '../../utils/utils';
+import { isNumber } from '../../utils/lang';
+import { Inject } from '../../utils';
 
 type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
 @Component({
@@ -44,10 +45,10 @@ export class AzInput {
     });
     this.native.addEventListener('keydown', (e: KeyboardEvent) => {
       if (this.clearable && this.clearButton) this.setClearButtonDisplay();
-      if (e.which === 38 /* ArrowUp */) {
+      if (e.which === 38 || e.detail === 38/* ArrowUp */) {
         this.onIncreaseButtonClicked(e);
         e.preventDefault()
-      } else if (e.which === 40 /* ArrowDown */) {
+      } else if (e.which === 40 || e.detail === 40/* ArrowDown */) {
         this.onDecreaseButtonClicked(e);
         e.preventDefault()
       }
@@ -152,10 +153,9 @@ export class AzInput {
         <az-icon icon="arrow-up" onClick={this.onIncreaseButtonClicked}></az-icon>
         <az-icon icon="arrow-down" onClick={this.onDecreaseButtonClicked}></az-icon>
       </span>}
-      {this.type !== 'number' && <az-icon ref={el => this.clearButton = el}
+      {this.type !== 'number' && <az-icon icon="circle-cross" ref={el => this.clearButton = el}
         style={{display: this.clearable && this.value && this.value.length > 0 ? '' : 'none'}}
         class="clear"
-        icon="circle-cross"
         onClick={() => this.clear()}>
       </az-icon>}
       <input ref={el => this.native = el} type={this.nativeType} value={this.value}
