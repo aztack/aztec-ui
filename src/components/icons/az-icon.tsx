@@ -1,7 +1,9 @@
 import { Component, Prop, Element, Host, h} from '@stencil/core';
 import builtinIcons from './builtin';
-import { exportToGlobal } from '../../utils/utils';
+import { exportToGlobal, Inject } from '../../utils';
+import { JSXBase } from '@stencil/core/internal';
 
+type SVGAttributes = JSXBase.SVGAttributes<SVGElement>;
 @Component({
   tag: 'az-icon',
   styleUrl: 'az-icon.styl',
@@ -19,7 +21,11 @@ export class AzIcon {
   @Prop() height: number | string = 12;
   @Prop() color: string = 'white';
   @Prop() register: boolean = false;
+  @Prop({mutable: true}) svgAttr: Record<string, string> = {};
 
+  @Inject({
+    parse: true
+  })
   componentWillLoad() {
     if (this.register && this.icon) registerIcon(this.icon, this.el.textContent);
   }
@@ -34,19 +40,20 @@ export class AzIcon {
     }
     return (
       <Host class={`az-icon az-icon-${this.icon} az-anim-${this.icon}`}>
-        {icon(this.width, this.height, this.color)}
+        {icon(this.width, this.height, this.svgAttr.fill || this.color, this.svgAttr)}
       </Host>
     );
   }
 }
 
 function svgIcon(d: string | string[]) {
-  return (width: number, height: number, fill: string) => {
+  return (width: number, height: number, fill: string, props?: SVGAttributes) => {
     const paths = (Array.isArray(d) ? d : [d]).map(p => {
       return <path fill={fill} d={p}></path>
     });
     return (
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 1024 1024">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg"
+        width={width} height={height} {...props} viewBox="0 0 1024 1024">
         {paths}
       </svg>
     );
