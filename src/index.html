@@ -242,7 +242,7 @@
       <az-input type="color-picker" placeholder="placeholder" value="red" clearable="true" autocomplete="off"></az-input>
     </az-section>
     <az-section caption="Icons" class="icons">
-      <az-icon icon="arrow-down" title="arrow-down"></az-icon>
+      <az-icon icon="arrow-down" title="arrow-down" color="#e05f5f"></az-icon>
       <az-icon icon="arrow-left" title="arrow-left"></az-icon>
       <az-icon icon="arrow-right" title="arrow-right"></az-icon>
       <az-icon icon="arrow-up" title="arrow-up"></az-icon>
@@ -250,9 +250,9 @@
       <az-icon icon="bars" title="bars"></az-icon>
       <az-icon icon="book" title="book"></az-icon>
       <az-icon icon="check" title="check"></az-icon>
-      <az-icon icon="circle-check" title="circle-check"></az-icon>
+      <az-icon icon="circle-check" title="circle-check" color="var(--az-success-color)"></az-icon>
       <az-icon icon="circle-cross" title="circle-cross"></az-icon>
-      <az-icon icon="circle-exclamation" title="circle-exclamation"></az-icon>
+      <az-icon icon="circle-exclamation" title="circle-exclamation" color="red"></az-icon>
       <az-icon icon="close" title="close"></az-icon>
       <az-icon icon="cog" title="cog"></az-icon>
       <az-icon icon="cogs" title="cogs"></az-icon>
@@ -339,9 +339,9 @@
       </az-toolbar>
     </az-section>
     <az-section caption="Slider">
-      <az-slider caption="Default"></az-slider>
-      <az-slider caption="Triangle" class="triangle"></az-slider>
-      <az-slider caption="Round" class="round"></az-slider>
+      <az-slider caption="Default" min="0" max="1000"></az-slider>
+      <az-slider caption="Triangle"  min="0" max="100" class="triangle"></az-slider>
+      <az-slider caption="Round"  min="0" max="100" class="round"></az-slider>
     </az-section>
     <az-section caption="Color Picker">
       <az-color-picker></az-color-picker>
@@ -460,12 +460,18 @@
     document.addEventListener('DOMContentLoaded', async () => {
       // colors
       tree1.addItem('Colors', null, {icon: 'check', expanded: false});
-      tree1.addItem('Red', 0);
-      tree1.addItem('Orange', 0);
-      tree1.addItem('Yellow', 0);
-      tree1.addItem('Green', 0);
-      tree1.addItem('Blue', 0);
-      tree1.addItem('Purple', 0);
+      let t = await tree1.addItem('Red', 0);
+      tree1.addItem('红色', t);
+      t = await tree1.addItem('Orange', 0);
+      tree1.addItem('橙色', t);
+      t = await tree1.addItem('Yellow', 0);
+      tree1.addItem('黄色', t);
+      t = await tree1.addItem('Green', 0);
+      tree1.addItem('绿色', t);
+      t = await tree1.addItem('Blue', 0);
+      tree1.addItem('蓝色', t);
+      t = await tree1.addItem('Purple', 0);
+      tree1.addItem('紫色', t);
       // shapes
       tree1.addItem('Shapes', null, {icon: 'book', expanded: false});
       tree1.addItem('Triangle', 1);
