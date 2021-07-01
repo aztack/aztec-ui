@@ -195,9 +195,17 @@ export class AzTreeItem implements IAzTreeItem {
     if (this.level) style.paddingLeft = `${(this.level) * 12}px`;
 
     // parts
-    const joint = <az-icon class={{joint: true, hide: this.items.length <= 0}} width="9" height="9" icon="triangle" onClick={this.toggle}></az-icon>;
+    const joint =
+      <az-icon class={{joint: true, hide: this.items.length <= 0}}
+        icon="triangle"
+        width="9"
+        height="9"
+        onClick={this.toggle}>
+      </az-icon>;
     const icon = this.icon ? <az-icon icon={this.icon}></az-icon> : null;
-    const checkbox = (this.tree && this.tree.selecting) ? <az-checkbox checked={this.checked} onChanged={(e) => this.onCheckboxChecked(e)}></az-checkbox> : null;
+    const checkbox = (this.tree && this.tree.selecting)
+      ? <az-checkbox checked={this.checked} onChanged={(e) => this.onCheckboxChecked(e)}></az-checkbox>
+      : null;
     const text = this.html
       ? <span innerHTML={this.html}></span>
       : <span>{this.caption}</span>
