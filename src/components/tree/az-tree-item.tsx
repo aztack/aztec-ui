@@ -1,5 +1,5 @@
 import { forceUpdate, h } from '@stencil/core';
-import { AzTree } from './az-tree';
+import { AzTree, SerializeOptions } from './az-tree';
 export interface IAzTreeItem {
   caption: string;
   icon?: string;
@@ -11,6 +11,12 @@ export interface IAzTreeItem {
   parent: IAzTreeItem;
   items: IAzTreeItem[];
 }
+
+export type AzTreeItemField = keyof IAzTreeItem;
+
+const AzTreeItemFields: readonly AzTreeItemField[] = Object.freeze([
+  'caption', 'icon', 'selected', 'active', 'level', 'data', 'html', 'items'
+]);
 
 export class AzTreeItem implements IAzTreeItem {
   el: HTMLElement;
@@ -29,6 +35,7 @@ export class AzTreeItem implements IAzTreeItem {
   html: string = '';
   _expanded: boolean = true;
   checked: boolean = false;
+  draggable: boolean = false;
 
   get expanded() {
     return this._expanded;
@@ -42,6 +49,36 @@ export class AzTreeItem implements IAzTreeItem {
     }
   }
 
+  get isFirstChild() {
+    return this.parent.items.indexOf(this) === 0;
+  }
+
+  get isLastChild() {
+    return this.parent.items.indexOf(this) === this.parent.items.length - 1;
+  }
+
+  get index() {
+    return this.parent.items.indexOf(this);
+  }
+
+  get firstChild() {
+    return this.items[0];
+  }
+
+  get lastChild() {
+    return this.items[this.items.length - 1];
+  }
+
+  get previousSibling() {
+    const index = this.parent.items.indexOf(this);
+    return this.parent.items[index - 1];
+  }
+
+  get nextSibling() {
+    const index = this.parent.items.indexOf(this);
+    return this.parent.items[index + 1];
+  }
+
   constructor() {
     this.addItem = this.addItem.bind(this);
     this.removeItemAt = this.removeItemAt.bind(this);
@@ -50,6 +87,7 @@ export class AzTreeItem implements IAzTreeItem {
     this.toggle = this.toggle.bind(this);
     this._inject = this._inject.bind(this);
   }
+
   fromJson(item: IAzTreeItem, parent: any | AzTree, level: number) {
     Object.assign(this, item);
     this.parent = parent;
@@ -63,29 +101,24 @@ export class AzTreeItem implements IAzTreeItem {
       });
     }
   }
-  get isFirstChild() {
-    return this.parent.items.indexOf(this) === 0;
+
+  toJson(opts: SerializeOptions) {
+    let fields = AzTreeItemFields;
+    if (opts.filter) {
+      if (typeof opts.filter === 'string') {
+        fields = [opts.filter];
+      } else if (Array.isArray(opts.filter)) {
+        fields = opts.filter;
+      }
+    }
+    const result = fields.reduce((result, field) => {
+      result[field] = this[field];
+      return result;
+    }, {} as Record<AzTreeItemField, any>);
+    result.items = this.items.map(it => it.toJson(opts))
+    return result;
   }
-  get isLastChild() {
-    return this.parent.items.indexOf(this) === this.parent.items.length - 1;
-  }
-  get index() {
-    return this.parent.items.indexOf(this);
-  }
-  get firstChild() {
-    return this.items[0];
-  }
-  get lastChild() {
-    return this.items[this.items.length - 1];
-  }
-  get previousSibling() {
-    const index = this.parent.items.indexOf(this);
-    return this.parent.items[index - 1];
-  }
-  get nextSibling() {
-    const index = this.parent.items.indexOf(this);
-    return this.parent.items[index + 1];
-  }
+
   addItem(item: AzTreeItem | string) {
     if (!this.tree) {
       throw new Error(`No parent tree!`);
@@ -172,7 +205,7 @@ export class AzTreeItem implements IAzTreeItem {
     const extra = [];
     // render
     return (
-      <az-tree-item class={cls} data-level={this.level} ref={this._inject}>
+      <az-tree-item class={cls} data-level={this.level} ref={this._inject} draggable={this.draggable}>
         <div class="az-tree-item__caption az-caption"style={style} onClick={() => this.onActivateItem(this)}>
           {joint}{checkbox}{icon}{text}{extra}
         </div>

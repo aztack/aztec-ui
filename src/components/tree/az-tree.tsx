@@ -1,5 +1,5 @@
 import { Component, Prop, Element, h, Method, Host, Event, EventEmitter, forceUpdate } from '@stencil/core';
-import { IAzTreeItem, AzTreeItem } from './az-tree-item';
+import { IAzTreeItem, AzTreeItem, AzTreeItemField } from './az-tree-item';
 import { HostElement } from '@stencil/core/internal';
 import { Inject } from '../../utils';
 
@@ -7,6 +7,13 @@ enum MoveDirection {
   Up = -1,
   Down = 1,
 }
+
+export type TreeItemVisitor = (item: AzTreeItem) => boolean | void;
+
+export interface SerializeOptions {
+  filter?: AzTreeItemField | AzTreeItemField[]
+}
+
 @Component({
   tag: 'az-tree',
   styleUrl: 'az-tree.styl',
@@ -19,6 +26,7 @@ export class AzTree {
   @Prop({mutable: true}) items: AzTreeItem[] = [];
   @Prop({mutable: true}) checkedItems: Set<AzTreeItem> = new Set<AzTreeItem>();
   @Prop({mutable: true}) activeItem: AzTreeItem = null;
+  @Prop({reflect: true}) itemDraggable: boolean = false;
 
   @Event() selected: EventEmitter;
   @Event() expanded: EventEmitter;
@@ -36,6 +44,7 @@ export class AzTree {
     if (typeof itemOrCaption === 'string') {
       item = new AzTreeItem();
       item.caption = itemOrCaption;
+      item.draggable = this.itemDraggable;
     } else if (itemOrCaption instanceof AzTreeItem){
       item = itemOrCaption;
     }
@@ -68,11 +77,17 @@ export class AzTree {
     this.items = items.map(it => {
       const treeItem = new AzTreeItem();
       treeItem.tree = this;
+      treeItem.draggable = this.itemDraggable;
       treeItem.fromJson(it, this, treeItem.level + 1);
       return treeItem;
     });
     this.activeItem = null;
     this.checkedItems.clear();
+  }
+
+  @Method()
+  async toJson(opts: SerializeOptions) {
+    return this.items.map(it => it.toJson(opts));
   }
 
   @Method()
@@ -140,16 +155,52 @@ export class AzTree {
     }
   }
 
-  find(/*(predicate: (item: AzTreeItem) => boolean*/) {
-    throw new Error('Not implemented!');
+  @Method()
+  async find(predicate: TreeItemVisitor) {
+    let ret = null;
+    traverse(this.items, it => {
+      if (predicate(it) === true) {
+        ret = it;
+        return true;
+      }
+    });
+    return ret;
   }
 
-  expandAll() {
-    throw new Error('Not implemented!');
+  @Method()
+  async findAll(predicate: TreeItemVisitor) {
+    let ret = [];
+    traverse(this.items, it => {
+      if (predicate(it) === true) {
+        ret.push(it);
+      }
+    });
+    return ret;
   }
 
-  collapsAll() {
-    throw new Error('Not implemented!');
+  @Method()
+  async expandAll(level: number) {
+    traverse(this.items, it => {
+      if (typeof level === 'number') {
+        if (it.level > level) return true;
+        it.expanded = it.level <= level;
+      }
+      it.expanded = true;
+    });
+    this._forceUpdate();
+  }
+
+  @Method()
+  async collapsAll() {
+    traverse(this.items, it => {
+      it.expanded = false;
+    });
+    this._forceUpdate();
+  }
+
+  @Method()
+  async traverse(visit: TreeItemVisitor) {
+    traverse(this.items, visit);
   }
 
   render() {
@@ -208,4 +259,17 @@ function getParentNextSibling(it: AzTreeItem) {
 
 function isExpandAndHasChildren(item: AzTreeItem) {
   return item.expanded && item.items.length;
+}
+
+function traverse(items: AzTreeItem[], visit: TreeItemVisitor) {
+  let ret = false;
+  for (let it of items) {
+    ret = !!visit(it);
+    if (ret) break;
+    if (it.items.length) {
+      ret = traverse(it.items, visit);
+    }
+    if (ret) break;
+  }
+  return ret;
 }
