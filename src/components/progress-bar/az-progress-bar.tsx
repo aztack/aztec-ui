@@ -1,4 +1,4 @@
-import { Component, Prop, Element, h, Host } from '@stencil/core';
+import { Component, Prop, Element, h, Host, Watch } from '@stencil/core';
 
 @Component({
   tag: 'az-progress-bar',
@@ -9,10 +9,18 @@ export class AzProgressBar {
   @Element() el: HTMLElement;
 
   @Prop() caption: string = '';
-  @Prop({reflect: true}) value: number = 50;
-  @Prop({reflect: true}) max: number = 100;
+  @Prop({reflect: true, mutable: true}) value: number = 50;
+  @Prop({reflect: true, mutable: true}) max: number = 100;
+  @Prop({reflect: true, mutable: true}) min: number = 0;
 
   componentDidLoad() {}
+
+  @Watch('value')
+  onValueChanged(newValue) {
+    if (newValue > this.max || newValue < this.min) {
+      this.value = Math.max(Math.min(this.value, this.max), this.min);
+    }
+  }
 
   render() {
     return (
