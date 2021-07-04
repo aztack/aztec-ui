@@ -10,3 +10,11 @@ export function capitalize(str: string) {
   if (!str) return str;
   return str.replace(/^[a-z]|( [a-z])/g, (m: string) => m.toUpperCase());
 }
+
+export function join(str: string, prefix: string, splitter: string = ' ', suffix: string = '', joiner: string = splitter) {
+  if (!str) return str;
+  if (!str.includes(splitter)) {
+    return `${prefix}${str}${suffix}`;
+  }
+  return str.split(splitter).map(part => `${prefix}${part}${suffix}`).join(joiner);
+}
