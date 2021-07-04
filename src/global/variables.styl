@@ -171,3 +171,26 @@
     opacity: 0;
   }
 }
+
+.az-effect-border:hover {
+  border: 1px solid var(--az-caption-color);
+  border-radius: var(--az-border-radius-mini);
+}
+.az-effect-background:hover {
+  background-color: var(--az-border-color);
+  border-radius: var(--az-border-radius-mini);
+}
+.az-hr {
+  height: 1px;
+  border: none;
+  background-color: var(--az-border-color);
+}
+.az-caption__wrapper {
+  display: inline-flex;
+  [slot=after] {
+    margin-left: 4px;
+  }
+  [slot=before] {
+    margin-right: 4px;
+  }
+}
