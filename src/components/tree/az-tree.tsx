@@ -2,6 +2,9 @@ import { Component, Prop, Element, h, Method, Host, Event, EventEmitter, forceUp
 import { IAzTreeItem, AzTreeItem, AzTreeItemField } from './az-tree-item';
 import { HostElement } from '@stencil/core/internal';
 import { Inject } from '../../utils';
+import { getCaptionWithIcon } from '../../utils/helper';
+import { PositionHorizontal } from '../../global/typing';
+import { nextTick } from '../../utils/next-tick';
 
 enum MoveDirection {
   Up = -1,
@@ -22,20 +25,38 @@ export interface SerializeOptions {
 export class AzTree {
   @Element() el: HostElement;
   @Prop({reflect: true}) caption: string = '';
+  @Prop({reflect: true}) icon: string;
+  @Prop({reflect: true}) iconPosition: PositionHorizontal = 'left';
   @Prop({reflect: true}) selecting: boolean = false;
   @Prop({mutable: true}) items: AzTreeItem[] = [];
   @Prop({mutable: true}) checkedItems: Set<AzTreeItem> = new Set<AzTreeItem>();
   @Prop({mutable: true}) activeItem: AzTreeItem = null;
   @Prop({reflect: true}) itemDraggable: boolean = false;
+  @Prop({reflect: true}) DragAndDropDataType: string = 'application/json';
 
   @Event() selected: EventEmitter;
   @Event() expanded: EventEmitter;
   @Event() collapsed: EventEmitter;
   @Event() inserted: EventEmitter;
+  @Event() itemDrop: EventEmitter;
+  @Event() itemDragOver: EventEmitter
+
+  draggingItem: HTMLElement | null = null;
+  dragOverItem: HTMLElement | null = null;
+  lastDragOverItem: HTMLElement | null = null;
+  lastDropItem: HTMLElement | null = null;
+
 
   @Inject({})
   componentDidLoad() {
     this.setNextActiveItem = this.setNextActiveItem.bind(this);
+
+    //Drag and drop
+    this.onDragStartTreeItem = this.onDragStartTreeItem.bind(this);
+    this.onDragEnterTreeItem = this.onDragEnterTreeItem.bind(this);
+    this.onDragOverTreeItem = this.onDragOverTreeItem.bind(this);
+    this.onDragLeaveTreeItem = this.onDragLeaveTreeItem.bind(this);
+    this.onDropTreeItem = this.onDropTreeItem.bind(this);
   }
 
   @Method()
@@ -203,9 +224,58 @@ export class AzTree {
     traverse(this.items, visit);
   }
 
+  onDragStartTreeItem(e: DragEvent) {
+    this.draggingItem = /*@__INLINE__*/closestTreeItem(e);
+    this.dragOverItem = this.draggingItem;
+    e.dataTransfer.effectAllowed = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
+    console.log('dragstart', this.draggingItem['caption']);
+  }
+
+  onDragEnterTreeItem(e: DragEvent) {
+    const item = closestTreeItem(e);
+    if (this.dragOverItem === item) return;
+    this.lastDragOverItem = this.dragOverItem;
+    this.dragOverItem = item;
+    nextTick(() => {
+      setDragging(item, true);
+      this._forceUpdate();
+    });
+    console.log('dragenter', this.dragOverItem['caption']);
+  }
+
+  onDragOverTreeItem(e: DragEvent) {
+    e.dataTransfer.dropEffect = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
+    e.preventDefault();
+  }
+
+  onDragLeaveTreeItem(e: DragEvent) {
+    if (isSameWithTarget(e, this.dragOverItem)) return;
+    if (this.lastDragOverItem) setDragging(this.lastDragOverItem, false);
+
+    e.stopPropagation();
+    this._forceUpdate();
+
+    console.log('leave', closestTreeItem(e)['caption']);
+  }
+
+  onDropTreeItem(e: DragEvent) {
+    const data = e.dataTransfer.getData(this.DragAndDropDataType);
+    const item = closestTreeItem(e);
+    this.lastDropItem = item;
+    this.itemDrop.emit({data, event: e, tree: this, item});
+    console.log('drop', this.lastDropItem['caption']);
+    setDragging(this.lastDropItem, false);
+    this.draggingItem = null;
+
+    e.stopPropagation();
+    this._forceUpdate();
+  }
+
   render() {
-    return <Host onKeyDown={this.onKeyDown.bind(this)} tabindex="-1">
-      <span class="az-tree__caption az-caption">{this.caption}</span>
+    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition);
+    return <Host onKeyDown={this.onKeyDown.bind(this)} tabindex="-1"
+      ondragstart={this.onDragStartTreeItem}>
+      {caption}
       {this.items.map((c: AzTreeItem) => c.render())}
     </Host>
   }
@@ -245,6 +315,10 @@ export class AzTree {
 
   dispose() {
     this.items.forEach(it => it.remove());
+    this.dragOverItem = null;
+    this.draggingItem = null;
+    this.lastDragOverItem = null;
+    this.lastDropItem = null;
   }
 }
 
@@ -272,4 +346,17 @@ function traverse(items: AzTreeItem[], visit: TreeItemVisitor) {
     if (ret) break;
   }
   return ret;
+}
+
+function isSameWithTarget(e: DragEvent, target: HTMLElement) {
+  return /*@__INLINE__*/closestTreeItem(e) === target;
+}
+
+function closestTreeItem(e: DragEvent) {
+  return (e.target as HTMLElement).closest('az-tree-item') as HTMLElement;
+}
+
+function setDragging(e: HTMLElement, val: boolean) {
+  if (!e) return;
+  (e['__stencil'] as AzTreeItem).dragging = val;
 }

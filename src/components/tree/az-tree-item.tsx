@@ -36,6 +36,7 @@ export class AzTreeItem implements IAzTreeItem {
   _expanded: boolean = true;
   checked: boolean = false;
   draggable: boolean = false;
+  dragging: boolean = false;
 
   get expanded() {
     return this._expanded;
@@ -188,6 +189,7 @@ export class AzTreeItem implements IAzTreeItem {
     const style: Record<string, string> = {};
     const cls = {
       'az-tree-item': true,
+      'az-tree-item__dragover': this.dragging,
       expanded: this.expanded,
       collapsed: !this.expanded,
       active: this.active
@@ -200,6 +202,7 @@ export class AzTreeItem implements IAzTreeItem {
         icon="triangle"
         width="9"
         height="9"
+        hover-effect="border"
         onClick={this.toggle}>
       </az-icon>;
     const icon = this.icon ? <az-icon icon={this.icon}></az-icon> : null;
@@ -213,8 +216,14 @@ export class AzTreeItem implements IAzTreeItem {
     const extra = [];
     // render
     return (
-      <az-tree-item class={cls} data-level={this.level} ref={this._inject} draggable={this.draggable}>
-        <div class="az-tree-item__caption az-caption"style={style} onClick={() => this.onActivateItem(this)}>
+      <az-tree-item class={cls} data-level={this.level} ref={this._inject}
+        draggable={this.draggable}
+        ondragenter={this.tree.onDragEnterTreeItem}
+        ondragover={this.tree.onDragOverTreeItem}
+        ondragleave={this.tree.onDragLeaveTreeItem}
+        ondrop={this.tree.onDropTreeItem}
+        >
+        <div class={`az-tree-item__caption az-caption`} style={style} onClick={() => this.onActivateItem(this)}>
           {joint}{checkbox}{icon}{text}{extra}
         </div>
         <div class="az-tree-item__children">
@@ -234,11 +243,13 @@ export class AzTreeItem implements IAzTreeItem {
     // @ts-ignore
     this.el = el;
     el['__stencil'] = this;
+    el.caption = this.caption;
     el.addItem = this.addItem;
     el.removeItemAt = this.removeItemAt;
     el.removeItem = this.removeItem;
     el.remove = this.remove;
     el.toggle = this.toggle;
+    el.dragging = this.dragging;
     el.items = this.items;
   }
 
