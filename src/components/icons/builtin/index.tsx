@@ -18,6 +18,7 @@ import Cog from './cog';
 import Cogs from './cogs';
 import Copy from './copy';
 import Debian from './debian';
+import DirTree from './dir-tree';
 import Download from './download';
 import Edit from './edit';
 import EllipsisH from './ellipsis-h';
@@ -84,6 +85,7 @@ const builtinIcons: Record<string, string | string[]> = {
   "cogs": Cogs,
   "copy": Copy,
   "debian": Debian,
+  "dir-tree": DirTree,
   "download": Download,
   "edit": Edit,
   "ellipsis-h": EllipsisH,
@@ -136,74 +138,75 @@ const builtinIcons: Record<string, string | string[]> = {
 export default builtinIcons;
 exportToGlobal('icons', {
   get() {
-    return ["android","arrow-down","arrow-left","arrow-right","arrow-up","backward","bars","book","check","circle-check","circle-cross","circle-exclamation","close","cog","cogs","copy","debian","download","edit","ellipsis-h","ellipsis-v","empty-box","exchange","exclamation","eye","eye-close","fast-backward","fast-forward","fedora","file","floppy-disk","folder","forward","heart","linux","list","loading","logout","mac","minus","mouse-pointer","move","nintendo-switch","open-folder","paste","pause","plus","question","redhat","redo","refresh","search","share","share2","shop-cart","square","suse-linux","three-dots","trash","triangle","ubuntu","undo","windows","zoom-in","zoom-out"]
+    return ["android","arrow-down","arrow-left","arrow-right","arrow-up","backward","bars","book","check","circle-check","circle-cross","circle-exclamation","close","cog","cogs","copy","debian","dir-tree","download","edit","ellipsis-h","ellipsis-v","empty-box","exchange","exclamation","eye","eye-close","fast-backward","fast-forward","fedora","file","floppy-disk","folder","forward","heart","linux","list","loading","logout","mac","minus","mouse-pointer","move","nintendo-switch","open-folder","paste","pause","plus","question","redhat","redo","refresh","search","share","share2","shop-cart","square","suse-linux","three-dots","trash","triangle","ubuntu","undo","windows","zoom-in","zoom-out"]
   }
 })
 // for Demo
 /*
-  <az-icon icon="android" title="android"></az-icon>
-  <az-icon icon="arrow-down" title="arrow-down"></az-icon>
-  <az-icon icon="arrow-left" title="arrow-left"></az-icon>
-  <az-icon icon="arrow-right" title="arrow-right"></az-icon>
-  <az-icon icon="arrow-up" title="arrow-up"></az-icon>
-  <az-icon icon="backward" title="backward"></az-icon>
-  <az-icon icon="bars" title="bars"></az-icon>
-  <az-icon icon="book" title="book"></az-icon>
-  <az-icon icon="check" title="check"></az-icon>
-  <az-icon icon="circle-check" title="circle-check"></az-icon>
-  <az-icon icon="circle-cross" title="circle-cross"></az-icon>
-  <az-icon icon="circle-exclamation" title="circle-exclamation"></az-icon>
-  <az-icon icon="close" title="close"></az-icon>
-  <az-icon icon="cog" title="cog"></az-icon>
-  <az-icon icon="cogs" title="cogs"></az-icon>
-  <az-icon icon="copy" title="copy"></az-icon>
-  <az-icon icon="debian" title="debian"></az-icon>
-  <az-icon icon="download" title="download"></az-icon>
-  <az-icon icon="edit" title="edit"></az-icon>
-  <az-icon icon="ellipsis-h" title="ellipsis-h"></az-icon>
-  <az-icon icon="ellipsis-v" title="ellipsis-v"></az-icon>
-  <az-icon icon="empty-box" title="empty-box"></az-icon>
-  <az-icon icon="exchange" title="exchange"></az-icon>
-  <az-icon icon="exclamation" title="exclamation"></az-icon>
-  <az-icon icon="eye" title="eye"></az-icon>
-  <az-icon icon="eye-close" title="eye-close"></az-icon>
-  <az-icon icon="fast-backward" title="fast-backward"></az-icon>
-  <az-icon icon="fast-forward" title="fast-forward"></az-icon>
-  <az-icon icon="fedora" title="fedora"></az-icon>
-  <az-icon icon="file" title="file"></az-icon>
-  <az-icon icon="floppy-disk" title="floppy-disk"></az-icon>
-  <az-icon icon="folder" title="folder"></az-icon>
-  <az-icon icon="forward" title="forward"></az-icon>
-  <az-icon icon="heart" title="heart"></az-icon>
-  <az-icon icon="linux" title="linux"></az-icon>
-  <az-icon icon="list" title="list"></az-icon>
-  <az-icon icon="loading" title="loading"></az-icon>
-  <az-icon icon="logout" title="logout"></az-icon>
-  <az-icon icon="mac" title="mac"></az-icon>
-  <az-icon icon="minus" title="minus"></az-icon>
-  <az-icon icon="mouse-pointer" title="mouse-pointer"></az-icon>
-  <az-icon icon="move" title="move"></az-icon>
-  <az-icon icon="nintendo-switch" title="nintendo-switch"></az-icon>
-  <az-icon icon="open-folder" title="open-folder"></az-icon>
-  <az-icon icon="paste" title="paste"></az-icon>
-  <az-icon icon="pause" title="pause"></az-icon>
-  <az-icon icon="plus" title="plus"></az-icon>
-  <az-icon icon="question" title="question"></az-icon>
-  <az-icon icon="redhat" title="redhat"></az-icon>
-  <az-icon icon="redo" title="redo"></az-icon>
-  <az-icon icon="refresh" title="refresh"></az-icon>
-  <az-icon icon="search" title="search"></az-icon>
-  <az-icon icon="share" title="share"></az-icon>
-  <az-icon icon="share2" title="share2"></az-icon>
-  <az-icon icon="shop-cart" title="shop-cart"></az-icon>
-  <az-icon icon="square" title="square"></az-icon>
-  <az-icon icon="suse-linux" title="suse-linux"></az-icon>
-  <az-icon icon="three-dots" title="three-dots"></az-icon>
-  <az-icon icon="trash" title="trash"></az-icon>
-  <az-icon icon="triangle" title="triangle"></az-icon>
-  <az-icon icon="ubuntu" title="ubuntu"></az-icon>
-  <az-icon icon="undo" title="undo"></az-icon>
-  <az-icon icon="windows" title="windows"></az-icon>
-  <az-icon icon="zoom-in" title="zoom-in"></az-icon>
-  <az-icon icon="zoom-out" title="zoom-out"></az-icon>
+  <az-icon icon="android" title="android" hover-effect="border"></az-icon>
+  <az-icon icon="arrow-down" title="arrow-down" hover-effect="border"></az-icon>
+  <az-icon icon="arrow-left" title="arrow-left" hover-effect="border"></az-icon>
+  <az-icon icon="arrow-right" title="arrow-right" hover-effect="border"></az-icon>
+  <az-icon icon="arrow-up" title="arrow-up" hover-effect="border"></az-icon>
+  <az-icon icon="backward" title="backward" hover-effect="border"></az-icon>
+  <az-icon icon="bars" title="bars" hover-effect="border"></az-icon>
+  <az-icon icon="book" title="book" hover-effect="border"></az-icon>
+  <az-icon icon="check" title="check" hover-effect="border"></az-icon>
+  <az-icon icon="circle-check" title="circle-check" hover-effect="border"></az-icon>
+  <az-icon icon="circle-cross" title="circle-cross" hover-effect="border"></az-icon>
+  <az-icon icon="circle-exclamation" title="circle-exclamation" hover-effect="border"></az-icon>
+  <az-icon icon="close" title="close" hover-effect="border"></az-icon>
+  <az-icon icon="cog" title="cog" hover-effect="border"></az-icon>
+  <az-icon icon="cogs" title="cogs" hover-effect="border"></az-icon>
+  <az-icon icon="copy" title="copy" hover-effect="border"></az-icon>
+  <az-icon icon="debian" title="debian" hover-effect="border"></az-icon>
+  <az-icon icon="dir-tree" title="dir-tree" hover-effect="border"></az-icon>
+  <az-icon icon="download" title="download" hover-effect="border"></az-icon>
+  <az-icon icon="edit" title="edit" hover-effect="border"></az-icon>
+  <az-icon icon="ellipsis-h" title="ellipsis-h" hover-effect="border"></az-icon>
+  <az-icon icon="ellipsis-v" title="ellipsis-v" hover-effect="border"></az-icon>
+  <az-icon icon="empty-box" title="empty-box" hover-effect="border"></az-icon>
+  <az-icon icon="exchange" title="exchange" hover-effect="border"></az-icon>
+  <az-icon icon="exclamation" title="exclamation" hover-effect="border"></az-icon>
+  <az-icon icon="eye" title="eye" hover-effect="border"></az-icon>
+  <az-icon icon="eye-close" title="eye-close" hover-effect="border"></az-icon>
+  <az-icon icon="fast-backward" title="fast-backward" hover-effect="border"></az-icon>
+  <az-icon icon="fast-forward" title="fast-forward" hover-effect="border"></az-icon>
+  <az-icon icon="fedora" title="fedora" hover-effect="border"></az-icon>
+  <az-icon icon="file" title="file" hover-effect="border"></az-icon>
+  <az-icon icon="floppy-disk" title="floppy-disk" hover-effect="border"></az-icon>
+  <az-icon icon="folder" title="folder" hover-effect="border"></az-icon>
+  <az-icon icon="forward" title="forward" hover-effect="border"></az-icon>
+  <az-icon icon="heart" title="heart" hover-effect="border"></az-icon>
+  <az-icon icon="linux" title="linux" hover-effect="border"></az-icon>
+  <az-icon icon="list" title="list" hover-effect="border"></az-icon>
+  <az-icon icon="loading" title="loading" hover-effect="border"></az-icon>
+  <az-icon icon="logout" title="logout" hover-effect="border"></az-icon>
+  <az-icon icon="mac" title="mac" hover-effect="border"></az-icon>
+  <az-icon icon="minus" title="minus" hover-effect="border"></az-icon>
+  <az-icon icon="mouse-pointer" title="mouse-pointer" hover-effect="border"></az-icon>
+  <az-icon icon="move" title="move" hover-effect="border"></az-icon>
+  <az-icon icon="nintendo-switch" title="nintendo-switch" hover-effect="border"></az-icon>
+  <az-icon icon="open-folder" title="open-folder" hover-effect="border"></az-icon>
+  <az-icon icon="paste" title="paste" hover-effect="border"></az-icon>
+  <az-icon icon="pause" title="pause" hover-effect="border"></az-icon>
+  <az-icon icon="plus" title="plus" hover-effect="border"></az-icon>
+  <az-icon icon="question" title="question" hover-effect="border"></az-icon>
+  <az-icon icon="redhat" title="redhat" hover-effect="border"></az-icon>
+  <az-icon icon="redo" title="redo" hover-effect="border"></az-icon>
+  <az-icon icon="refresh" title="refresh" hover-effect="border"></az-icon>
+  <az-icon icon="search" title="search" hover-effect="border"></az-icon>
+  <az-icon icon="share" title="share" hover-effect="border"></az-icon>
+  <az-icon icon="share2" title="share2" hover-effect="border"></az-icon>
+  <az-icon icon="shop-cart" title="shop-cart" hover-effect="border"></az-icon>
+  <az-icon icon="square" title="square" hover-effect="border"></az-icon>
+  <az-icon icon="suse-linux" title="suse-linux" hover-effect="border"></az-icon>
+  <az-icon icon="three-dots" title="three-dots" hover-effect="border"></az-icon>
+  <az-icon icon="trash" title="trash" hover-effect="border"></az-icon>
+  <az-icon icon="triangle" title="triangle" hover-effect="border"></az-icon>
+  <az-icon icon="ubuntu" title="ubuntu" hover-effect="border"></az-icon>
+  <az-icon icon="undo" title="undo" hover-effect="border"></az-icon>
+  <az-icon icon="windows" title="windows" hover-effect="border"></az-icon>
+  <az-icon icon="zoom-in" title="zoom-in" hover-effect="border"></az-icon>
+  <az-icon icon="zoom-out" title="zoom-out" hover-effect="border"></az-icon>
 */
