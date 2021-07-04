@@ -21,10 +21,9 @@ az-section section {
       cursor: pointer;
       & az-icon {
         display: inline-block;
-        margin-right: 0.5em;
+        margin-right: 4px;
         text-align: center;
         svg {
-          transform: rotate(180deg);
           transition: transform var(--az-transform-animation-duration-normal);
         }
       }
@@ -45,7 +44,7 @@ az-section section {
   }
   &.collapsed {
     .header .az-section-caption az-icon svg {
-      transform: rotate(0deg);
+      transform: rotate(180deg);
     }
     .content {
       transform: scaleY(0);

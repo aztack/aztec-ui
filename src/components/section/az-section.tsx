@@ -1,5 +1,7 @@
 import { Component, Prop, Element, h, Method } from '@stencil/core';
+import { PositionHorizontal } from '../../global/typing';
 import { Inject } from '../../utils';
+import { getCaptionWithIcon } from '../../utils/helper';
 
 @Component({
   tag: 'az-section',
@@ -9,10 +11,12 @@ import { Inject } from '../../utils';
 export class AzSection {
   @Element() el: HTMLElement;
   @Prop({reflect: true}) caption: string = '';
+  @Prop({reflect: true}) captionPosition: PositionHorizontal = 'left';
   @Prop({reflect: true}) collapsed: boolean = false;
-  @Prop({reflect: true}) collapsable: boolean = true;
+  @Prop({reflect: true, mutable: true}) collapsable: boolean = true;
   @Prop({reflect: true}) arrowPosition: 'left' | 'right' = 'left';
-  @Prop({reflect: true}) icon: string = 'arrow-up';
+  @Prop({reflect: true}) icon: string = 'arrow-down';
+  @Prop({reflect: true}) iconPosition: PositionHorizontal = 'left';
 
   @Inject({})
   componentDidLoad() {
@@ -29,6 +33,7 @@ export class AzSection {
   }
 
   render() {
+    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition);
     return (
       <section class={{
         'az-section': true,
@@ -39,9 +44,8 @@ export class AzSection {
           header: true,
           [`arrow-${this.arrowPosition}`]: true
         }}>
-          <span class="az-section-caption az-caption" onClick={() => this.collapsed = !this.collapsed}>
-            <az-icon class="az-section__arrow" icon={this.icon}></az-icon>
-            {this.caption}
+          <span class="az-section-caption az-caption" onClick={() => this.collapsable && (this.collapsed = !this.collapsed)}>
+            {caption}
           </span>
           <slot name="header"></slot>
         </div>
