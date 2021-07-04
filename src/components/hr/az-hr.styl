@@ -1,0 +1,28 @@
+az-hr {
+  position: relative;
+  display: block;
+  .az-hr {
+    margin: 1em 0;
+  }
+  .az-caption__wrapper {
+    position: absolute;
+    background-color: var(--az-primary-color);
+    top: 0;
+    display: inline-flex;
+  }
+  .az-caption__center {
+    left: 50%;
+    transform: translate(-50%,-50%);
+    padding: 0 0.5em;
+  }
+  .az-caption__left {
+    left: 0;
+    padding: 0 0.5em 0 0;
+    transform: translateY(-50%);
+  }
+  .az-caption__right {
+    right: 0;
+    padding: 0 0 0 0.5em;
+    transform: translateY(-50%);
+  }
+}
