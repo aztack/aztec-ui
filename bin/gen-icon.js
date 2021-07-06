@@ -9,6 +9,10 @@ const rl = $readline.createInterface({
 
 rl.question('Input full svg of the icon:', (svg) => {
   rl.question(`Icon name without extension?`, name => {
+    if (!name) {
+      console.error(`Name is empty`);
+      rl.close()
+    }
     try {
       if (!svg.match(/^\s*<svg|<\/svg>$/)) {
         throw new Error(`Invalid SVG`)
