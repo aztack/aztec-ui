@@ -16,7 +16,7 @@ export class AzTabs {
   @Element() el: HostElement;
 
   @Prop({mutable: true}) items: TabItemConfig[] = [];
-  @Prop({attribute: 'active-index'}) activeIndex: number = 0;
+  @Prop({reflect: true, mutable: true}) activeIndex: number = 0;
   @Prop({reflect: true}) indicator: boolean = true;
 
   @Event() closed: EventEmitter;
