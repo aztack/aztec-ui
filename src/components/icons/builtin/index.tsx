@@ -46,6 +46,8 @@ import Mac from './mac';
 import Minus from './minus';
 import MousePointer from './mouse-pointer';
 import Move from './move';
+import MoveNodeDown from './move-node-down';
+import MoveNodeUp from './move-node-up';
 import NewChildNode from './new-child-node';
 import NewSiblingNode from './new-sibling-node';
 import NintendoSwitch from './nintendo-switch';
@@ -116,6 +118,8 @@ const builtinIcons: Record<string, string | string[]> = {
   "minus": Minus,
   "mouse-pointer": MousePointer,
   "move": Move,
+  "move-node-down": MoveNodeDown,
+  "move-node-up": MoveNodeUp,
   "new-child-node": NewChildNode,
   "new-sibling-node": NewSiblingNode,
   "nintendo-switch": NintendoSwitch,
@@ -194,6 +198,8 @@ exportToGlobal('icons', {
   <az-icon icon="minus" title="minus" hover-effect="border"></az-icon>
   <az-icon icon="mouse-pointer" title="mouse-pointer" hover-effect="border"></az-icon>
   <az-icon icon="move" title="move" hover-effect="border"></az-icon>
+  <az-icon icon="move-node-down" title="move-node-down" hover-effect="border"></az-icon>
+  <az-icon icon="move-node-up" title="move-node-up" hover-effect="border"></az-icon>
   <az-icon icon="new-child-node" title="new-child-node" hover-effect="border"></az-icon>
   <az-icon icon="new-sibling-node" title="new-sibling-node" hover-effect="border"></az-icon>
   <az-icon icon="nintendo-switch" title="nintendo-switch" hover-effect="border"></az-icon>
