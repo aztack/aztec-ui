@@ -5,6 +5,10 @@ az-menu-item {
   padding: var(--az-padding-normal);
   cursor: default;
   border-left: 1px solid transparent;
+  position: relative;
+  flex-wrap: nowrap;
+  min-width: 8em;
+  max-width: 16em;
   &:hover {
     background-color: var(--az-highlight-color);
     .az-caption {
@@ -26,6 +30,9 @@ az-menu-item {
 
   .az-caption {
     margin: auto 0.5em;
+    max-width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 .az-menu-item__separator {
@@ -33,4 +40,7 @@ az-menu-item {
   line-height: 0;
   padding: 0;
   background-color: var(--az-border-color);
+}
+.az-menu-item__extra {
+  margin-left: auto;
 }
