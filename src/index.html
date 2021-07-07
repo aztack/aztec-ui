@@ -164,7 +164,7 @@
       padding: .5em;
     }
     #demo .icons .content az-icon {
-      margin-bottom: 4px;
+      /*margin-bottom: 4px;*/
     }
     #demo az-section .content {
       padding-bottom: 1em !important;
@@ -176,6 +176,9 @@
   </style>
   <az-icon register icon="fort" style="display:none">
     M365.714286 576l0-128q0-9.142857-9.142857-9.142857l-54.857143 0q-9.142857 0-9.142857 9.142857l0 128q0 9.142857 9.142857 9.142857l54.857143 0q9.142857 0 9.142857-9.142857zm292.571429 0l0-128q0-9.142857-9.142857-9.142857l-54.857143 0q-9.142857 0-9.142857 9.142857l0 128q0 9.142857 9.142857 9.142857l54.857143 0q9.142857 0 9.142857-9.142857zm292.571429 18.285714l0 429.714286-365.714286 0 0-182.857143q0-45.714286-32-77.714286t-77.714286-32-77.714286 32-32 77.714286l0 182.857143-365.714286 0 0-429.714286q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857l0 64 73.142857 0 0-356.571429q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857l0 64 73.142857 0 0-64q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857l0 64 73.142857 0 0-64q0-9.142857 9.142857-9.142857l9.142857 0 0-224.571429q-18.285714-10.857143-18.285714-31.428571 0-14.857143 10.857143-25.714286t25.714286-10.857143 25.714286 10.857143 10.857143 25.714286q0 20.571429-18.285714 31.428571l0 5.142857 155.428571 0q9.142857 0 9.142857 9.142857l0 128q0 9.142857-9.142857 9.142857l-155.428571 0 0 73.142857 9.142857 0q9.142857 0 9.142857 9.142857l0 64 73.142857 0 0-64q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857l0 64 73.142857 0 0-64q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857l0 356.571429 73.142857 0 0-64q0-9.142857 9.142857-9.142857l54.857143 0q9.142857 0 9.142857 9.142857z
+  </az-icon>
+  <az-icon register icon="radio" style="display:none;">
+    M853.333333 256C900.266667 256 938.666667 294.4 938.666667 341.333333L938.666667 853.333333C938.666667 900.266667 900.266667 938.666667 853.333333 938.666667L170.666667 938.666667C123.733333 938.666667 85.333333 900.266667 85.333333 853.333333L85.333333 341.333333C85.333333 305.066667 107.946667 273.92 139.946667 261.546667L670.293333 42.666667 702.72 120.746667 376.746667 256 853.333333 256M853.333333 341.333333 170.666667 341.333333 170.666667 512 682.666667 512 682.666667 426.666667 768 426.666667 768 512 853.333333 512 853.333333 341.333333M298.666667 597.333333C227.84 597.333333 170.666667 654.506667 170.666667 725.333333 170.666667 796.16 227.84 853.333333 298.666667 853.333333 369.493333 853.333333 426.666667 796.16 426.666667 725.333333 426.666667 654.506667 369.493333 597.333333 298.666667 597.333333Z
   </az-icon>
   <az-panel caption="Demo" id="demo" style="max-width: 800px">
     <az-section caption="Buttons & Tabs">
@@ -230,7 +233,7 @@
         <az-radio caption="info" checked="true" type="info"></az-radio>
       </az-group>
     </az-section>
-    <az-section caption="Input" arrow-position="right" icon="arrow-up">
+    <az-section caption="Input" arrow-position="right">
       <az-input type="text" caption="Text" value="with caption" autocomplete="off"></az-input>
       <az-input type="text" caption="Placeholder" placeholder="placeholder" autocomplete="off"></az-input>
       <az-input type="text" caption="Clearable" placeholder="placeholder" value="clearable" clearable="true" autocomplete="off"></az-input>
@@ -242,65 +245,97 @@
       <az-input type="color-picker" placeholder="placeholder" value="red" clearable="true" autocomplete="off"></az-input>
     </az-section>
     <az-section caption="Icons" class="icons">
-      <az-icon icon="arrow-down" title="arrow-down" color="#e05f5f"></az-icon>
-      <az-icon icon="arrow-left" title="arrow-left"></az-icon>
-      <az-icon icon="arrow-right" title="arrow-right"></az-icon>
-      <az-icon icon="arrow-up" title="arrow-up"></az-icon>
-      <az-icon icon="backward" title="backward"></az-icon>
-      <az-icon icon="bars" title="bars"></az-icon>
-      <az-icon icon="book" title="book"></az-icon>
-      <az-icon icon="check" title="check"></az-icon>
-      <az-icon icon="circle-check" title="circle-check" color="var(--az-success-color)"></az-icon>
-      <az-icon icon="circle-cross" title="circle-cross"></az-icon>
-      <az-icon icon="circle-exclamation" title="circle-exclamation" color="red"></az-icon>
-      <az-icon icon="close" title="close"></az-icon>
-      <az-icon icon="cog" title="cog"></az-icon>
-      <az-icon icon="cogs" title="cogs"></az-icon>
-      <az-icon icon="copy" title="copy"></az-icon>
-      <az-icon icon="download" title="download"></az-icon>
-      <az-icon icon="edit" title="edit"></az-icon>
-      <az-icon icon="ellipsis-h" title="ellipsis-h"></az-icon>
-      <az-icon icon="ellipsis-v" title="ellipsis-v"></az-icon>
-      <az-icon icon="exchange" title="exchange"></az-icon>
-      <az-icon icon="exclamation" title="exclamation"></az-icon>
-      <az-icon icon="eye" title="eye"></az-icon>
-      <az-icon icon="eye-close" title="eye-close"></az-icon>
-      <az-icon icon="fast-backward" title="fast-backward"></az-icon>
-      <az-icon icon="fast-forward" title="fast-forward"></az-icon>
-      <az-icon icon="file" title="file"></az-icon>
-      <az-icon icon="floppy-disk" title="floppy-disk"></az-icon>
-      <az-icon icon="folder" title="folder"></az-icon>
-      <az-icon icon="forward" title="forward"></az-icon>
-      <az-icon icon="list" title="list"></az-icon>
-      <az-icon icon="loading" title="loading"></az-icon>
-      <az-icon icon="logout" title="logout"></az-icon>
-      <az-icon icon="minus" title="minus"></az-icon>
-      <az-icon icon="mouse-pointer" title="mouse-pointer"></az-icon>
-      <az-icon icon="move" title="move"></az-icon>
-      <az-icon icon="open-folder" title="open-folder"></az-icon>
-      <az-icon icon="paste" title="paste"></az-icon>
-      <az-icon icon="pause" title="pause"></az-icon>
-      <az-icon icon="plus" title="plus"></az-icon>
-      <az-icon icon="question" title="question"></az-icon>
-      <az-icon icon="redo" title="redo"></az-icon>
-      <az-icon icon="refresh" title="refresh"></az-icon>
-      <az-icon icon="search" title="search"></az-icon>
-      <az-icon icon="share" title="share"></az-icon>
-      <az-icon icon="share2" title="share2"></az-icon>
-      <az-icon icon="shop-cart" title="shop-cart"></az-icon>
-      <az-icon icon="square" title="square"></az-icon>
-      <az-icon icon="three-dots" title="three-dots"></az-icon>
-      <az-icon icon="trash" title="trash"></az-icon>
-      <az-icon icon="triangle" title="triangle"></az-icon>
-      <az-icon icon="undo" title="undo"></az-icon>
-      <az-icon icon="zoom-in" title="zoom-in"></az-icon>
-      <az-icon icon="zoom-out" title="zoom-out"></az-icon>
+      <az-icon icon="arrow-down" title="arrow-down" color="#e05f5f" hover-effect="border"></az-icon>
+      <az-icon icon="arrow-left" title="arrow-left" hover-effect="border"></az-icon>
+      <az-icon icon="arrow-right" title="arrow-right" hover-effect="border"></az-icon>
+      <az-icon icon="arrow-up" title="arrow-up" hover-effect="border"></az-icon>
+      <az-icon icon="backward" title="backward" hover-effect="border"></az-icon>
+      <az-icon icon="bars" title="bars" hover-effect="border"></az-icon>
+      <az-icon icon="book" title="book" hover-effect="border"></az-icon>
+      <az-icon icon="check" title="check" hover-effect="border"></az-icon>
+      <az-icon icon="circle-check" title="circle-check" hover-effect="border"></az-icon>
+      <az-icon icon="circle-cross" title="circle-cross" hover-effect="border"></az-icon>
+      <az-icon icon="circle-exclamation" title="circle-exclamation" hover-effect="border"></az-icon>
+      <az-icon icon="close" title="close" hover-effect="border"></az-icon>
+      <az-icon icon="cog" title="cog" hover-effect="border"></az-icon>
+      <az-icon icon="cogs" title="cogs" hover-effect="border"></az-icon>
+      <az-icon icon="copy" title="copy" hover-effect="border"></az-icon>
+      <az-icon icon="debian" title="debian" hover-effect="border"></az-icon>
+      <az-icon icon="dir-tree" title="dir-tree" hover-effect="border"></az-icon>
+      <az-icon icon="download" title="download" hover-effect="border"></az-icon>
+      <az-icon icon="drag" title="drag" hover-effect="border"></az-icon>
+      <az-icon icon="edit" title="edit" hover-effect="border"></az-icon>
+      <az-icon icon="ellipsis-h" title="ellipsis-h" hover-effect="border"></az-icon>
+      <az-icon icon="ellipsis-v" title="ellipsis-v" hover-effect="border"></az-icon>
+      <az-icon icon="empty-box" title="empty-box" hover-effect="border"></az-icon>
+      <az-icon icon="exchange" title="exchange" hover-effect="border"></az-icon>
+      <az-icon icon="exclamation" title="exclamation" hover-effect="border"></az-icon>
+      <az-icon icon="eye" title="eye" hover-effect="border"></az-icon>
+      <az-icon icon="eye-close" title="eye-close" hover-effect="border"></az-icon>
+      <az-icon icon="fast-backward" title="fast-backward" hover-effect="border"></az-icon>
+      <az-icon icon="fast-forward" title="fast-forward" hover-effect="border"></az-icon>
+      <az-icon icon="fedora" title="fedora" hover-effect="border"></az-icon>
+      <az-icon icon="file" title="file" hover-effect="border"></az-icon>
+      <az-icon icon="floppy-disk" title="floppy-disk" hover-effect="border"></az-icon>
+      <az-icon icon="folder" title="folder" hover-effect="border"></az-icon>
+      <az-icon icon="forward" title="forward" hover-effect="border"></az-icon>
+      <az-icon icon="heart" title="heart" hover-effect="border"></az-icon>
+      <az-icon icon="linux" title="linux" hover-effect="border"></az-icon>
+      <az-icon icon="list" title="list" hover-effect="border"></az-icon>
+      <az-icon icon="loading" title="loading" hover-effect="border"></az-icon>
+      <az-icon icon="logout" title="logout" hover-effect="border"></az-icon>
+      <az-icon icon="mac" title="mac" hover-effect="border"></az-icon>
+      <az-icon icon="minus" title="minus" hover-effect="border"></az-icon>
+      <az-icon icon="mouse-pointer" title="mouse-pointer" hover-effect="border"></az-icon>
+      <az-icon icon="move" title="move" hover-effect="border"></az-icon>
+      <az-icon icon="move-node-down" title="move-node-down" hover-effect="border"></az-icon>
+      <az-icon icon="move-node-up" title="move-node-up" hover-effect="border"></az-icon>
+      <az-icon icon="nintendo-switch" title="nintendo-switch" hover-effect="border"></az-icon>
+      <az-icon icon="open-folder" title="open-folder" hover-effect="border"></az-icon>
+      <az-icon icon="paste" title="paste" hover-effect="border"></az-icon>
+      <az-icon icon="pause" title="pause" hover-effect="border"></az-icon>
+      <az-icon icon="plus" title="plus" hover-effect="border"></az-icon>
+      <az-icon icon="question" title="question" hover-effect="border"></az-icon>
+      <az-icon icon="redhat" title="redhat" hover-effect="border"></az-icon>
+      <az-icon icon="redo" title="redo" hover-effect="border"></az-icon>
+      <az-icon icon="refresh" title="refresh" hover-effect="border"></az-icon>
+      <az-icon icon="search" title="search" hover-effect="border"></az-icon>
+      <az-icon icon="share" title="share" hover-effect="border"></az-icon>
+      <az-icon icon="share2" title="share2" hover-effect="border"></az-icon>
+      <az-icon icon="shop-cart" title="shop-cart" hover-effect="border"></az-icon>
+      <az-icon icon="square" title="square" hover-effect="border"></az-icon>
+      <az-icon icon="suse-linux" title="suse-linux" hover-effect="border"></az-icon>
+      <az-icon icon="three-dots" title="three-dots" hover-effect="border"></az-icon>
+      <az-icon icon="trash" title="trash" hover-effect="border"></az-icon>
+      <az-icon icon="triangle" title="triangle" hover-effect="border"></az-icon>
+      <az-icon icon="ubuntu" title="ubuntu" hover-effect="border"></az-icon>
+      <az-icon icon="undo" title="undo" hover-effect="border"></az-icon>
+      <az-icon icon="windows" title="windows" hover-effect="border"></az-icon>
+      <az-icon icon="zoom-in" title="zoom-in" hover-effect="border"></az-icon>
+      <az-icon icon="zoom-out" title="zoom-out" hover-effect="border"></az-icon>
+      &nbsp;
+      <az-icon icon="radio" title="radio" wait="true" color="var(--az-danger-color)" hover-effect="background"></az-icon>
+      <az-icon icon="fort" title="fort" wait="true" color="var(--az-info-color)" hover-effect="background"></az-icon>
+
+      <az-hr caption="Icon Composition" icon="check" caption-position="center" style="margin:1em 0"></az-hr>
+      <az-icon caption="WSL" icon="heart" hover-effect="border background" style="padding: 2px 0.5em" width="6" height="6">
+        <az-icon icon="windows" slot="before"></az-icon>
+        <az-icon icon="ubuntu" slot="after"></az-icon>
+      </az-icon>
+
+      <az-hr caption="Downloads" caption-position="center" style="margin-bottom:1em;">
+        <az-icon icon="exclamation" slot="after"></az-icon>
+      </az-hr>
+        <az-button caption="Windows" icon="windows" class="az-effect-background"></az-button>
+        <az-button caption="Mac" icon="mac" class="az-effect-background"></az-button>
+        <az-button caption="Linux" icon="linux" class="az-effect-background"></az-button>
     </az-section>
-    <az-section caption="Tree">
-      <az-tree id="tree1" caption="Tree Demo" selecting="true"></az-tree>
+
+    <az-section caption="Tree" icon-position="right" icon="dir-tree" collapsable="true">
+      <az-tree id="tree1" caption="Tree Demo" selecting="true" item-draggable="true"></az-tree>
       <br/>
-      <az-tree id="tree2" caption="Files"></az-tree>
-      <az-contextual-menu parent="#tree2">
+      <az-tree id="tree2" caption="Files" icon="open-folder" icon-position="left"></az-tree>
+      <az-contextual-menu>
         <az-menu-item caption="Add" action="add" icon="plus"></az-menu-item>
         <az-menu-item caption="-"></az-menu-item>
         <az-menu-item caption="Delete" action="delete" icon="close"></az-menu-item>
@@ -317,19 +352,21 @@
         <az-button caption="Backward" type="info" icon="backward"></az-button>
         <az-toolbar-separator></az-toolbar-separator>
         <az-button caption="" type="plain" icon="three-dots">
-          <az-contextual-menu triggerevent="mouseenter" closeevent="mouseleave" parent="parent">
+          <az-contextual-menu triggerevent="mouseenter" popupalign="to-right">
             <az-menu-item caption="Open" action="open" icon="open-folder"></az-menu-item>
             <az-menu-item caption="-"></az-menu-item>
             <az-menu-item caption="Save" action="save" icon="floppy-disk"></az-menu-item>
-            <az-menu-item caption="Export" action="export" icon="download">
-              <az-contextual-menu parent="parent" triggerevent="mouseenter" closeevent="mouseleave" popupalign="to-right">
+            <az-menu-item caption="Export to Somewhere on the Internet" action="export" icon="download">
+              <az-icon slot="extra" icon="triangle"></az-icon>
+              <az-contextual-menu triggerevent="mouseenter" closeevent="mouseleave" popupalign="to-right">
                 <az-menu-item caption="Copy title" action="title"></az-menu-item>
                 <az-menu-item caption="Abc" action="abc"></az-menu-item>
               </az-contextual-menu>
             </az-menu-item>
+            <az-menu-item icon="arrow-up" caption="hover ↑ see full caption" extra-text=""></az-menu-item>
             <az-menu-item caption="Delete" icon="close" type="danger" action="delete"></az-menu-item>
-            <az-menu-item caption="More..." type="info" action="more" icon="arrow-right">
-              <az-contextual-menu parent="parent" triggerevent="mouseenter" closeevent="mouseleave" popupalign="to-right">
+            <az-menu-item caption="More" type="info" action="more" icon="three-dots" extra-icon="triangle">
+              <az-contextual-menu triggerevent="mouseenter" closeevent="mouseleave" popupalign="to-right">
                 <az-menu-item caption="Copy title" action="title"></az-menu-item>
                 <az-menu-item caption="Abc" action="abc"></az-menu-item>
               </az-contextual-menu>
@@ -382,7 +419,7 @@
       </div>
     </az-section>
     <az-section caption="Progress Bar">
-      <az-progress-bar id="progressbar1" caption="Volume" max="200" value="100"></az-progress-bar>
+      <az-progress-bar id="progressbar1" caption="Volume" min="90" max="200" value="100"></az-progress-bar>
       <az-icon class="az-button" icon="minus" onclick="progressbar1.value-=10"></az-icon>
       <az-icon icon="plus" onclick="progressbar1.value+=10"></az-icon>
     </az-section>
@@ -484,6 +521,9 @@
       tree1.addItem('Soul', korea);
       const japan = await tree1.addItem('🇯🇵Japan', 2);
       tree1.addItem('Tokyo', japan);
+      tree1.addEventListener('itemdrop', e => {
+        console.log(e.detail);
+      });
 
       tree2.fromJson([{
         caption: 'node_modules',
