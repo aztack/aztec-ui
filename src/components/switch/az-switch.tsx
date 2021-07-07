@@ -11,7 +11,7 @@ export class AzSwitch {
 
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) type: ComponentStyle = 'primary';
-  @Prop({reflect: true}) value: boolean = false;
+  @Prop({reflect: true, mutable: true}) value: boolean = false;
   @Prop({reflect: true}) size: ComponentSize = 'normal';
 
   @Event() changed: EventEmitter;
@@ -42,7 +42,13 @@ export class AzSwitch {
 
   render() {
     const cap = this.caption ? <span class="az-switch__caption az-caption">{this.caption}</span> : null;
-    const vdom = [<span class={{[this.type]: true, [this.size]: true, button: true, on: this.value, off: !this.value}}></span>];
+    const classes = {
+      button: true,
+      [this.type]: true,
+      [this.size]: true,
+      [this.value ? 'on' : 'off']: true
+    };
+    const vdom = [<span class={classes}></span>];
     if (cap) vdom.unshift(cap);
     return vdom;
   }
