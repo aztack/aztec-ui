@@ -1,7 +1,9 @@
 import { Component, Prop, Element, Host, h} from '@stencil/core';
 import builtinIcons from './builtin';
 import { exportToGlobal, Inject, join } from '../../utils';
-import { JSXBase } from '@stencil/core/internal';
+import { forceUpdate, JSXBase } from '@stencil/core/internal';
+const eventBus = document.createElement('div');
+const RegisterIconEvent = 'registericon';
 
 type SVGAttributes = JSXBase.SVGAttributes<SVGElement>;
 @Component({
@@ -22,52 +24,88 @@ export class AzIcon {
   @Prop() height: number | string = 12;
   @Prop() color: string = 'white';
   @Prop() register: boolean = false;
-  @Prop() hoverEffect: 'border' | 'background' | undefined;
+  @Prop({mutable: true}) wait: boolean = false;
+  @Prop() tag: string = '';
+  @Prop() hoverEffect: 'border' | 'background' | string | undefined;
   @Prop({mutable: true}) svgAttr: Record<string, string> = {};
+
+  waitIconName: string = '';
 
   @Inject({
     parse: true
   })
   componentWillLoad() {
-    if (this.register && this.icon) registerIcon(this.icon, this.el.textContent);
+    if (this.register && this.icon) {
+      registerIcon(this.icon, this.el.textContent);
+    }
+    this.onRegisterIcon = this.onRegisterIcon.bind(this);
+  }
+
+  onRegisterIcon(e: CustomEvent) {
+    if (e.type === RegisterIconEvent && e.detail === this.waitIconName) {
+      eventBus.removeEventListener(RegisterIconEvent, this.onRegisterIcon);
+      this.wait = false;
+      if (process.env.NODE_ENV) {
+        console.log(`Got icon ${e.detail}, force update`);
+      }
+      forceUpdate(this);
+    }
   }
 
   render () {
     if (this.register && this.icon) {
       return null;
     }
-    const icon = AzIcon.icons[this.icon];
+    let icon = AzIcon.icons[this.icon];
     if (typeof icon === 'undefined') {
-      throw new Error(`Can not find icon "${this.icon}"`);
+      if (!this.wait) {
+        throw new Error(`Can not find icon "${this.icon}"`);
+      } else {
+        icon = AzIcon.icons['loading'];
+        this.waitIconName = this.icon;
+        eventBus.addEventListener(RegisterIconEvent, this.onRegisterIcon);
+      }
+    } else {
+      if (this.wait) this.wait = false;
     }
     const effect = this.hoverEffect ? join(this.hoverEffect, 'az-effect-') : '';
-    return (
-      <Host class={`az-icon az-icon-${this.icon} az-anim-${this.icon} ${effect}`}>
-        {this.caption && <span class="az-button-caption az-caption">{this.caption}</span>}
-        <slot name="before"></slot>
-        {icon(this.width, this.height, this.svgAttr.fill || this.color, this.svgAttr)}
-        <slot name="after"></slot>
-      </Host>
-    );
+    const anim = this.wait ? 'loading' : this.icon;
+    return <Host class={`az-icon az-icon-${this.icon} az-anim-${anim} ${effect}`}>
+      {this.caption && <span class="az-button-caption az-caption">{this.caption}</span>}
+      <slot name="before"></slot>
+      {icon(this.width, this.height, this.svgAttr.fill || this.color, this.svgAttr)}
+      <slot name="after"></slot>
+    </Host>;
   }
 }
 
-function svgIcon(d: string | string[]) {
-  return (width: number, height: number, fill: string, props?: SVGAttributes) => {
-    const paths = (Array.isArray(d) ? d : [d]).map(p => {
-      return <path fill={fill} d={p}></path>
-    });
-    return (
-      <svg class="icon" xmlns="http://www.w3.org/2000/svg"
-        width={width} height={height} {...props} viewBox="0 0 1024 1024">
-        {paths}
-      </svg>
-    );
+function svgIcon(d: string | string[] | SVGElement) {
+  return (width: string, height: string, fill: string, props?: SVGAttributes) => {
+    let data;
+    if (d instanceof SVGElement) {
+      if (width != null) width = d.getAttribute('width');
+      if (height != null) height = d.getAttribute('height');
+      if (fill != null) fill = d.getAttribute('fill');
+      data = d.innerHTML;
+    } else {
+      data = (Array.isArray(d) ? d : [d]).map(p => {
+        return <path fill={fill} d={p}></path>
+      });
+    }
+    return <svg class="icon" xmlns="http://www.w3.org/2000/svg"
+      width={width} height={height} {...props} viewBox="0 0 1024 1024">
+      {data}
+    </svg>
   };
 }
 
-function registerIcon(name: string, dOrFn: string | Function) {
-  AzIcon.icons[name] = typeof dOrFn === 'string' ? svgIcon(dOrFn) : dOrFn;
+function registerIcon(name: string, data: string | Function | SVGElement) {
+  AzIcon.icons[name] = data instanceof Function ? data : svgIcon(data);
+  const event = new CustomEvent(RegisterIconEvent, { detail: name });
+  eventBus.dispatchEvent(event)
+  if (process.env.NODE_ENV) {
+    console.log(`Register icon '${name}'`);
+  }
 }
 
 function aliasIcon(origin: string, alias: string) {
