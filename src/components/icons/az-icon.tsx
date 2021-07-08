@@ -24,17 +24,19 @@ export class AzIcon {
   @Prop() height: number | string = 12;
   @Prop() color: string = 'white';
   @Prop() register: boolean = false;
-  @Prop({mutable: true}) wait: boolean = false;
+  @Prop() wait: boolean = false;
   @Prop() tag: string = '';
   @Prop() hoverEffect: 'border' | 'background' | string | undefined;
   @Prop({mutable: true}) svgAttr: Record<string, string> = {};
 
   waitIconName: string = '';
+  loaded: boolean = false;
 
   @Inject({
     parse: true
   })
   componentWillLoad() {
+    this.loaded = !!AzIcon.icons[this.icon];
     if (this.register && this.icon) {
       registerIcon(this.icon, this.el.textContent);
     }
@@ -44,7 +46,7 @@ export class AzIcon {
   onRegisterIcon(e: CustomEvent) {
     if (e.type === RegisterIconEvent && e.detail === this.waitIconName) {
       eventBus.removeEventListener(RegisterIconEvent, this.onRegisterIcon);
-      this.wait = false;
+      this.loaded = true;
       if (process.env.NODE_ENV) {
         console.log(`Got icon ${e.detail}, force update`);
       }
@@ -65,11 +67,9 @@ export class AzIcon {
         this.waitIconName = this.icon;
         eventBus.addEventListener(RegisterIconEvent, this.onRegisterIcon);
       }
-    } else {
-      if (this.wait) this.wait = false;
     }
     const effect = this.hoverEffect ? join(this.hoverEffect, 'az-effect-') : '';
-    const anim = this.wait ? 'loading' : this.icon;
+    const anim = (!this.loaded) ? 'loading' : this.icon;
     return <Host class={`az-icon az-icon-${this.icon} az-anim-${anim} ${effect}`}>
       {this.caption && <span class="az-button-caption az-caption">{this.caption}</span>}
       <slot name="before"></slot>
@@ -102,7 +102,7 @@ function svgIcon(d: string | string[] | SVGElement) {
 function registerIcon(name: string, data: string | Function | SVGElement) {
   AzIcon.icons[name] = data instanceof Function ? data : svgIcon(data);
   const event = new CustomEvent(RegisterIconEvent, { detail: name });
-  eventBus.dispatchEvent(event)
+  eventBus.dispatchEvent(event);
   if (process.env.NODE_ENV) {
     console.log(`Register icon '${name}'`);
   }
