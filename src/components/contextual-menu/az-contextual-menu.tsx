@@ -71,8 +71,8 @@ export class AzContextMenu {
     styl.display = 'flex';
 
     if (e && !this.isSubMenu && !this.popupalign) {
-      styl.left = e.pageX + 'px';
-      styl.top = e.pageY + 'px';
+      styl.left = (e.pageX + 2) + 'px';
+      styl.top = (e.pageY + 2) + 'px';
     }
     if (e) e.preventDefault();
     this.showed.emit(e);
