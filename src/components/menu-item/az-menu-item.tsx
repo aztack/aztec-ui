@@ -19,10 +19,12 @@ export class AzMenuItem {
 
   @Event() selected: EventEmitter;
 
-  @Inject()
-  componentDidLoad() {
+  constructor() {
     this.onClick = this.onClick.bind(this);
   }
+
+  @Inject({})
+  componentDidLoad() {}
 
   onClick() {
     this.selected.emit(this.action);
