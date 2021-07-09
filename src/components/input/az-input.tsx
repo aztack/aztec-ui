@@ -1,8 +1,10 @@
-import { Component, Prop, Element, h, Watch, Host, Method} from '@stencil/core';
-import { isNumber } from '../../utils/lang';
-import { Inject } from '../../utils';
+import { Component, Element, h, Host, Method, Prop, Watch } from '@stencil/core';
 
-type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
+import { MouseOrKeyboardEvent } from '../../global/typing';
+import { Inject } from '../../utils';
+import { isNumber } from '../../utils/lang';
+
+export type AzInputType = 'text' | 'number' | 'color-picker';
 @Component({
   tag: 'az-input',
   styleUrl: 'az-input.styl',
@@ -11,8 +13,8 @@ type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
 export class AzInput {
   @Element() el: HTMLElement;
   @Prop() caption: string = '';
-  @Prop() type: string = '';
-  @Prop() value: string = '';
+  @Prop() type: AzInputType = 'text';
+  @Prop({reflect: true, mutable: true}) value: string = '';
   @Prop({reflect: true}) clearable = false;
   @Prop({reflect: true}) popupalign = 'left top';
   @Prop({reflect: true}) constrain: boolean = false;
