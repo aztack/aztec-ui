@@ -22,7 +22,7 @@ export class AzIcon {
   @Prop() icon: string = '';
   @Prop() width: number | string = 12;
   @Prop() height: number | string = 12;
-  @Prop() color: string = 'white';
+  @Prop() color: string = 'var(--az-caption-color)';
   @Prop() register: boolean = false;
   @Prop() wait: boolean = false;
   @Prop() tag: string = '';
