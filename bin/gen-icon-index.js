@@ -1,9 +1,6 @@
-const $fs = require('fs');
 const $path = require('path');
+const {walk, camelize } = require('./utils');
 
-// helpers
-const capitalize = (str) => `${str[0].toUpperCase()}${str.substr(1)}`;
-const camelize = (str) => str.split('-').map(capitalize).join('');
 const _ = console.log;
 
 const __ = iconFiles = [];
@@ -39,16 +36,3 @@ __._(name => {
 _(`  <az-icon icon="${name}" title="${name}" hover-effect="border"></az-icon>`)
 });
 _('*/');
-
-// walk dir recursively
-function walk(dir, cb) {
-  const files = $fs.readdirSync(dir);
-  files.forEach(file => {
-    const path = $path.join(dir, file);
-    if ($fs.statSync(path).isDirectory()) {
-      walk(path, cb);
-    } else {
-      cb(file);
-    }
-  });
-};
