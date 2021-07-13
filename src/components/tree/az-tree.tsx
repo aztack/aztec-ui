@@ -1,10 +1,10 @@
-import { Component, Prop, Element, h, Method, Host, Event, EventEmitter, forceUpdate } from '@stencil/core';
-import { IAzTreeItem, AzTreeItem, AzTreeItemField } from './az-tree-item';
-import { HostElement } from '@stencil/core/internal';
-import { Inject } from '../../utils';
-import { getCaptionWithIcon } from '../../utils/helper';
+import {
+    Component, Element, Event, EventEmitter, forceUpdate, h, Host, Method, Prop
+} from '@stencil/core';
+
 import { PositionHorizontal } from '../../global/typing';
-import { nextTick } from '../../utils/next-tick';
+import { getCaptionWithIcon, getInternalInstance, Inject } from '../../utils';
+import { AzTreeItem, AzTreeItemField, IAzTreeItem } from './az-tree-item';
 
 enum MoveDirection {
   Up = -1,
@@ -13,8 +13,14 @@ enum MoveDirection {
 
 export type TreeItemVisitor = (item: AzTreeItem) => boolean | void;
 
+const debug = process.env.NODE_ENV === 'development';
+const log = debug ? console.log.bind(console) : () => {};
+
 export interface SerializeOptions {
-  filter?: AzTreeItemField | AzTreeItemField[]
+  filter?: AzTreeItemField | AzTreeItemField[],
+  recursive?: boolean,
+  asString?: boolean,
+  noEmptyItems?: boolean
 }
 
 @Component({
@@ -23,7 +29,12 @@ export interface SerializeOptions {
   shadow: false
 })
 export class AzTree {
-  @Element() el: HostElement;
+  static DefaultSerializeOptions: SerializeOptions = {
+    recursive: true,
+    filter: 'caption',
+    noEmptyItems: true
+  };
+  @Element() el: HTMLElement;
   @Prop({reflect: true}) caption: string = '';
   @Prop({reflect: true}) icon: string;
   @Prop({reflect: true}) iconPosition: PositionHorizontal = 'left';
@@ -32,19 +43,23 @@ export class AzTree {
   @Prop({mutable: true}) checkedItems: Set<AzTreeItem> = new Set<AzTreeItem>();
   @Prop({mutable: true}) activeItem: AzTreeItem = null;
   @Prop({reflect: true}) itemDraggable: boolean = false;
-  @Prop({reflect: true}) DragAndDropDataType: string = 'application/json';
+  @Prop({reflect: true}) activeOnMiddleButtonDown: boolean = true;
+  @Prop({reflect: true}) DndDataType: string = 'application/json';
 
   @Event() selected: EventEmitter;
   @Event() expanded: EventEmitter;
   @Event() collapsed: EventEmitter;
   @Event() inserted: EventEmitter;
-  @Event() itemDrop: EventEmitter;
-  @Event() itemDragOver: EventEmitter
+  @Event() itemdrop: EventEmitter;
+  @Event() itemdragover: EventEmitter;
+  @Event() itemremoving: EventEmitter;
+  @Event() itemremoved: EventEmitter;
 
-  draggingItem: HTMLElement | null = null;
-  dragOverItem: HTMLElement | null = null;
-  lastDragOverItem: HTMLElement | null = null;
-  lastDropItem: HTMLElement | null = null;
+  draggingEl: HTMLElement | null = null;
+  dragOverEl: HTMLElement | null = null;
+  lastDragOverEl: HTMLElement | null = null;
+  lastDropEl: HTMLElement | null = null;
+  action: string = '';
 
 
   @Inject({})
@@ -52,11 +67,12 @@ export class AzTree {
     this.setNextActiveItem = this.setNextActiveItem.bind(this);
 
     //Drag and drop
-    this.onDragStartTreeItem = this.onDragStartTreeItem.bind(this);
-    this.onDragEnterTreeItem = this.onDragEnterTreeItem.bind(this);
-    this.onDragOverTreeItem = this.onDragOverTreeItem.bind(this);
-    this.onDragLeaveTreeItem = this.onDragLeaveTreeItem.bind(this);
-    this.onDropTreeItem = this.onDropTreeItem.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragEnter = this.onDragEnter.bind(this);
+    this.onDragOver = this.onDragOver.bind(this);
+    this.onDragLeave = this.onDragLeave.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
+    this.onDrop = this.onDrop.bind(this);
   }
 
   @Method()
@@ -84,12 +100,13 @@ export class AzTree {
     item.parent = parent;
     item.level = parent.level + 1;
     parent.items = [...parent.items, item];
+    if (item.active) this.activeItem = item;
     this.inserted.emit(item);
     this._forceUpdate();
     return item;
   }
 
-  private _forceUpdate() {
+  _forceUpdate() {
     forceUpdate(this);
   }
 
@@ -107,13 +124,33 @@ export class AzTree {
   }
 
   @Method()
-  async toJson(opts: SerializeOptions) {
-    return this.items.map(it => it.toJson(opts));
+  async toJson(opts: SerializeOptions = AzTree.DefaultSerializeOptions) {
+    const mergedOpts = Object.assign({}, AzTree.DefaultSerializeOptions, opts);
+    return this.items.map(it => it.toJson(mergedOpts));
   }
 
   @Method()
-  async removeItem(index: number) {
-    this.items[index].remove();
+  async removeItem(indexOrItem: number | AzTreeItem) {
+    let index: number;
+    if (typeof indexOrItem === 'number') {
+      index = indexOrItem;
+    } else {
+      index = this.items.indexOf(indexOrItem);
+    }
+
+    if (index < 0) {
+      if (process.env.NODE_ENV) {
+        console.warn(`You are trying to remove an orphan tree item`);
+      }
+      return;
+    }
+
+    const removed = this.items.splice(index, 1)[0];
+    if (removed) {
+      this.checkedItems.delete(removed);
+      this.itemremoved.emit(removed[0]);
+    }
+    this._forceUpdate();
   }
 
   @Method()
@@ -169,6 +206,8 @@ export class AzTree {
       this.setNextActiveItem(MoveDirection.Down);
     } else if (e.key === 'Enter') {
       activeItem.checked = !activeItem.checked;
+    } else {
+      return;
     }
     forceUpdate(this);
     if (e) {
@@ -224,63 +263,108 @@ export class AzTree {
     traverse(this.items, visit);
   }
 
-  onDragStartTreeItem(e: DragEvent) {
-    this.draggingItem = /*@__INLINE__*/closestTreeItem(e);
-    this.dragOverItem = this.draggingItem;
+  onDragStart(e: DragEvent) {
+    this.draggingEl = /*@__INLINE__*/closestTreeItem(e);
+    this.dragOverEl = this.draggingEl;
+    const data = asTreeItem(this.draggingEl).toJson({recursive: true, asString: true}) as string;
+    e.dataTransfer.setData(this.DndDataType, data);
     e.dataTransfer.effectAllowed = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
-    console.log('dragstart', this.draggingItem['caption']);
+    log('dragstart', this.draggingEl['caption']);
   }
 
-  onDragEnterTreeItem(e: DragEvent) {
+  onDragEnter(e: DragEvent) {
+    if (!targetIsTreeItemCaption(e.target)) return;
+    if (targetIsIcon(e.relatedTarget)) return;
+    if (!this.hasDndData(e)) return;
     const item = closestTreeItem(e);
-    if (this.dragOverItem === item) return;
-    this.lastDragOverItem = this.dragOverItem;
-    this.dragOverItem = item;
-    nextTick(() => {
-      setDragging(item, true);
-      this._forceUpdate();
-    });
-    console.log('dragenter', this.dragOverItem['caption']);
-  }
-
-  onDragOverTreeItem(e: DragEvent) {
-    e.dataTransfer.dropEffect = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
-    e.preventDefault();
-  }
-
-  onDragLeaveTreeItem(e: DragEvent) {
-    if (isSameWithTarget(e, this.dragOverItem)) return;
-    if (this.lastDragOverItem) setDragging(this.lastDragOverItem, false);
-
-    e.stopPropagation();
+    this.lastDragOverEl = this.dragOverEl;
+    this.dragOverEl = item;
     this._forceUpdate();
-
-    console.log('leave', closestTreeItem(e)['caption']);
+    log('dragenter', this.dragOverEl['caption'], e);
   }
 
-  onDropTreeItem(e: DragEvent) {
-    const data = e.dataTransfer.getData(this.DragAndDropDataType);
-    const item = closestTreeItem(e);
-    this.lastDropItem = item;
-    this.itemDrop.emit({data, event: e, tree: this, item});
-    console.log('drop', this.lastDropItem['caption']);
-    setDragging(this.lastDropItem, false);
-    this.draggingItem = null;
+  onDragOver(e: DragEvent) {
+    if (this.dragOverEl === this.draggingEl) return;
 
+    e.preventDefault();
+    const toCaption = targetIsTreeItemCaption(e.target);
+    const fromIcons = targetIsIcon(e.relatedTarget);
+
+    // ignore dragover from icons(inside the caption) to caption
+    if (toCaption && fromIcons) return;
+
+    const toActionIcon = targetIsIcon(e.target, ['new-child-node', 'new-sibling-node']);
+    if (toCaption || toActionIcon) {
+      e.dataTransfer.dropEffect = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
+      if (typeof toActionIcon === 'string') this.action = toActionIcon;
+      this.itemdragover.emit({event: e, tree: this, item: this.dragOverEl});
+
+      // set dragover indicating border on tree item
+      setDragOver(this.dragOverEl, true);
+      this._forceUpdate();
+    }
+  }
+
+  onDragLeave(e: DragEvent) {
+    if (!targetIsTreeItemCaption(e.target)) return;
+
+    // remove dragover indicating border on tree item
+    setDragOver(this.lastDragOverEl, false);
+    this._forceUpdate();
+  }
+
+  onDragEnd(/*e: DragEvent*/) {
+    // remove dragover indicating border on tree item
+    setDragOver(this.dragOverEl, false);
+    setDragOver(this.lastDragOverEl, false);
+
+    // clear action
+    this.action = '';
+    this._forceUpdate();
+  }
+
+  onDrop(e: DragEvent) {
+    const data = e.dataTransfer.getData(this.DndDataType);
+    const item = closestTreeItem(e);
+    this.lastDropEl = item;
+    const action = this.action || 'new-child-node';
+
+    log('drop', action, this.lastDropEl['caption'], this.draggingEl['caption']);
+    const draggingItem = getInternalInstance<AzTreeItem>(this.draggingEl).removeSelf(false);
+    if(action === 'new-child-node') {
+      getInternalInstance<AzTreeItem>(this.lastDropEl).addItem(draggingItem);
+    } else if (action === 'new-sibling-node') {
+      getInternalInstance<AzTreeItem>(this.lastDropEl).parent.addItem(draggingItem);
+    }
+
+    setDragOver(this.lastDropEl, false);
+    this.draggingEl = null;
+
+    this.itemdrop.emit({data, event: e, tree: this, item});
     e.stopPropagation();
     this._forceUpdate();
   }
 
   render() {
     const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition);
-    return <Host onKeyDown={this.onKeyDown.bind(this)} tabindex="-1"
-      ondragstart={this.onDragStartTreeItem}>
+    const cls = {
+      'az-tree__item-draggable': this.itemDraggable
+    }
+    return <Host onKeyDown={this.onKeyDown.bind(this)} class={cls} tabindex="-1">
       {caption}
-      {this.items.map((c: AzTreeItem) => c.render())}
+      {this.items.map(((c: AzTreeItem, index) => c.render(index)))}
     </Host>
   }
 
-  setNextActiveItem(dir: MoveDirection) {
+  dispose() {
+    this.dragOverEl = null;
+    this.draggingEl = null;
+    this.lastDragOverEl = null;
+    this.lastDropEl = null;
+    this.items.forEach(it => it.removeSelf());
+  }
+
+  private setNextActiveItem(dir: MoveDirection) {
     if (!this.activeItem) return;
     const activeItem = this.activeItem;
     let next: AzTreeItem;
@@ -313,12 +397,11 @@ export class AzTree {
     }
   }
 
-  dispose() {
-    this.items.forEach(it => it.remove());
-    this.dragOverItem = null;
-    this.draggingItem = null;
-    this.lastDragOverItem = null;
-    this.lastDropItem = null;
+  private hasDndData(e: DragEvent) {
+    return e.dataTransfer
+      && Array.prototype.filter.call(e.dataTransfer.items, (it: DataTransferItem) => {
+        return it.type === this.DndDataType;
+      });
   }
 }
 
@@ -348,15 +431,26 @@ function traverse(items: AzTreeItem[], visit: TreeItemVisitor) {
   return ret;
 }
 
-function isSameWithTarget(e: DragEvent, target: HTMLElement) {
-  return /*@__INLINE__*/closestTreeItem(e) === target;
-}
-
 function closestTreeItem(e: DragEvent) {
   return (e.target as HTMLElement).closest('az-tree-item') as HTMLElement;
 }
 
-function setDragging(e: HTMLElement, val: boolean) {
+function setDragOver(e: HTMLElement, val: boolean) {
   if (!e) return;
-  (e['__stencil'] as AzTreeItem).dragging = val;
+  const it = /*@__INLINE__*/asTreeItem(e);
+  if (it) it.dragover = val;
+}
+
+function asTreeItem(e: HTMLElement) {
+  return /*@__INLINE__*/getInternalInstance<AzTreeItem>(e);
+}
+
+function targetIsIcon(e: EventTarget, names?: string[]) {
+  if (!e) return false;
+  const el = e as HTMLAzIconElement;
+  return names ? names.find(name => name === el.icon) : !!el.icon;
+}
+
+function targetIsTreeItemCaption(el: EventTarget) {
+  return (el as HTMLElement).classList.contains('az-tree-item__caption');
 }

@@ -1,5 +1,9 @@
 import { forceUpdate, h } from '@stencil/core';
+
+import { MouseButton } from '../../global/typing';
+import { setInternalInstance } from '../../utils/helper';
 import { AzTree, SerializeOptions } from './az-tree';
+
 export interface IAzTreeItem {
   caption: string;
   icon?: string;
@@ -8,14 +12,14 @@ export interface IAzTreeItem {
   level?: number;
   data?: any;
   html?: string;
-  parent: IAzTreeItem;
-  items: IAzTreeItem[];
+  parent?: IAzTreeItem;
+  items?: IAzTreeItem[];
 }
 
 export type AzTreeItemField = keyof IAzTreeItem;
 
 const AzTreeItemFields: readonly AzTreeItemField[] = Object.freeze([
-  'caption', 'icon', 'selected', 'active', 'level', 'data', 'html', 'items'
+  'caption', 'icon', 'selected', 'active', 'level', 'data', 'html'
 ]);
 
 export class AzTreeItem implements IAzTreeItem {
@@ -33,10 +37,11 @@ export class AzTreeItem implements IAzTreeItem {
   data: any = null;
 
   html: string = '';
-  _expanded: boolean = true;
   checked: boolean = false;
   draggable: boolean = false;
-  dragging: boolean = false;
+  dragover: boolean = false;
+
+  _expanded: boolean = true;
 
   get expanded() {
     return this._expanded;
@@ -84,8 +89,16 @@ export class AzTreeItem implements IAzTreeItem {
     this.addItem = this.addItem.bind(this);
     this.removeItemAt = this.removeItemAt.bind(this);
     this.removeItem = this.removeItem.bind(this);
-    this.remove = this.remove.bind(this);
+    this.removeSelf = this.removeSelf.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.onActivateItem = this.onActivateItem.bind(this);
+    this.onMiddleButtonDown = this.onMiddleButtonDown.bind(this);
+    this.onMoveUp = this.onMoveUp.bind(this);
+    this.onMoveDown = this.onMoveDown.bind(this);
+    this.onRemove = this.onRemove.bind(this);
+    this.toJson = this.toJson.bind(this);
+    this.set = this.set.bind(this);
+    this.setCaption = this.setCaption.bind(this);
     this._inject = this._inject.bind(this);
   }
 
@@ -103,7 +116,7 @@ export class AzTreeItem implements IAzTreeItem {
     }
   }
 
-  toJson(opts: SerializeOptions) {
+  toJson(opts: SerializeOptions = {}) {
     let fields = AzTreeItemFields;
     if (opts.filter) {
       if (typeof opts.filter === 'string') {
@@ -116,8 +129,26 @@ export class AzTreeItem implements IAzTreeItem {
       result[field] = this[field];
       return result;
     }, {} as Record<AzTreeItemField, any>);
-    result.items = this.items.map(it => it.toJson(opts))
-    return result;
+    if (opts.recursive) {
+      result.items = this.items.map(it => it.toJson(opts));
+      if (opts.noEmptyItems && !result.items.length) delete result.items;
+    }
+    return opts.asString ? JSON.stringify(result) : result;
+  }
+
+  set(field: AzTreeItemField, value: any, force = false) {
+    if (!AzTreeItemFields.includes(field)) {
+      console.warn(`There is no such field '${field}' on <az-tree-item>`);
+      return;
+    }
+    if (force || this[field as string] !== value) {
+      this[field as string] = value;
+      this.tree._forceUpdate();
+    }
+  }
+
+  setCaption(value: string) {
+    this.set('caption', value);
   }
 
   addItem(item: AzTreeItem | string) {
@@ -127,18 +158,24 @@ export class AzTreeItem implements IAzTreeItem {
     this.tree.addItem(item, this);
   }
 
-  remove() {
-    if (this.parent) {
+  /**
+   * Remove self from parent
+   * @param dispose remove internal __$stencil link from DOM element
+   * @returns
+   */
+  removeSelf(dispose: boolean = true) {
+    // remove() is ChildNode method
+    // we have to rename this method to removeSelf
+    if (this.parent instanceof AzTreeItem) {
       this.parent.removeItem(this);
     } else {
-      const pos = this.tree.items.findIndex(it => it === this);
-      if (pos >= 0) {
-        const deleted = this.tree.items.splice(pos, 1);
-        this.tree.checkedItems.delete(deleted[0]);
-      }
-      forceUpdate(this.tree);
+      this.tree.removeItem(this);
     }
-    this.dispose();
+    if (dispose) {
+      this.dispose();
+    } else {
+      return this;
+    }
   }
 
   removeItem(item: AzTreeItem) {
@@ -149,10 +186,11 @@ export class AzTreeItem implements IAzTreeItem {
   }
 
   removeItemAt(index: number) {
-    const deleted = this.items.splice(index, 1);
-    if (deleted.length) {
-      this.tree.checkedItems.delete(deleted[0]);
-      deleted[0].dispose();
+    const removed = this.items.splice(index, 1);
+    if (removed.length) {
+      this.tree.checkedItems.delete(removed[0]);
+      this.tree.itemremoved.emit(removed[0]);
+      removed[0].dispose();
     }
     forceUpdate(this.tree);
   }
@@ -172,7 +210,14 @@ export class AzTreeItem implements IAzTreeItem {
     }
   }
 
-  onActivateItem(item: AzTreeItem): void {
+  onMiddleButtonDown(e: MouseEvent) {
+    if (!this.tree.activeOnMiddleButtonDown) return;
+    if (e.button === MouseButton.Auxiliary) {
+      this.onActivateItem();
+    }
+  }
+
+  onActivateItem(): void {
     const tree = this.tree;
     if (!this.active) {
       this.active = true;
@@ -180,16 +225,37 @@ export class AzTreeItem implements IAzTreeItem {
         tree.activeItem.active = false;
       }
       tree.activeItem = this;
-      tree.selected.emit(item);
+      tree.selected.emit(this);
     }
   }
 
-  render() {
+  onMoveUp(): void {
+    if (this.isFirstChild) return;
+    const index = this.index;
+    const cur = this.parent.items.splice(index, 1)[0];
+    this.parent.items.splice(index - 1, 0, cur);
+    forceUpdate(this.tree);
+  }
+
+  onMoveDown(): void {
+    if (this.isLastChild) return;
+    const index = this.index;
+    const cur = this.parent.items.splice(index, 1)[0];
+    this.parent.items.splice(index + 1, 0, cur);
+    forceUpdate(this.tree);
+  }
+
+  onRemove(): void {
+    this.removeSelf();
+  }
+
+  render(index: number) {
     // styles
     const style: Record<string, string> = {};
     const cls = {
       'az-tree-item': true,
-      'az-tree-item__dragover': this.dragging,
+      'az-tree-item__first-child': index === 0,
+      'az-tree-item__last-child': index === this.parent.items.length - 1,
       expanded: this.expanded,
       collapsed: !this.expanded,
       active: this.active
@@ -197,6 +263,26 @@ export class AzTreeItem implements IAzTreeItem {
     if (this.level) style.paddingLeft = `${(this.level) * 12}px`;
 
     // parts
+    const dragHandle = this.draggable
+      ? <az-icon icon="drag"
+          draggable={true}
+          onDragStart={this.tree.onDragStart}></az-icon>
+      : null;
+    const moveNodeUp = (this.draggable && index > 0)
+      ? <az-icon icon="move-node-up" hover-effect="border background" onClick={this.onMoveUp}></az-icon>
+      : null;
+    const moveNodeDown = (this.draggable && index < this.parent.items.length - 1)
+      ? <az-icon icon="move-node-down" hover-effect="border background" onClick={this.onMoveDown}></az-icon>
+      : null;
+
+    const deleteNode = this.draggable
+      ? <az-icon icon="close" hover-effect="border background" onClick={this.onRemove}></az-icon>
+      : null;
+    const eventListeners = {
+    }
+    const dropAsChildren = <az-icon icon="new-child-node" {...eventListeners}></az-icon>;
+    const dropAsSibling = <az-icon icon="new-sibling-node" {...eventListeners}></az-icon>
+
     const joint =
       <az-icon class={{joint: true, hide: this.items.length <= 0}}
         icon="triangle"
@@ -214,27 +300,45 @@ export class AzTreeItem implements IAzTreeItem {
       : <span>{this.caption}</span>
     // TODO:
     const extra = [];
+
+    const captionCls = {
+      'az-caption': true,
+      'az-tree-item__caption': true,
+      [`az-tree-item__dragover`]: this.dragover,
+    }
+
+    const handlers: Record<string, Function> = {
+      onDragEnter: this.tree.onDragEnter,
+      onDragOver: this.tree.onDragOver,
+      onDragLeave: this.tree.onDragLeave,
+      onDragEnd: this.tree.onDragEnd,
+      onDrop: this.tree.onDrop,
+      onClick: this.onActivateItem,
+      onContextMenu: this.onActivateItem,
+      onMouseDown: this.onMiddleButtonDown
+    };
     // render
     return (
-      <az-tree-item class={cls} data-level={this.level} ref={this._inject}
-        draggable={this.draggable}
-        ondragenter={this.tree.onDragEnterTreeItem}
-        ondragover={this.tree.onDragOverTreeItem}
-        ondragleave={this.tree.onDragLeaveTreeItem}
-        ondrop={this.tree.onDropTreeItem}
-        >
-        <div class={`az-tree-item__caption az-caption`} style={style} onClick={() => this.onActivateItem(this)}>
+      <az-tree-item class={cls} data-level={this.level} ref={this._inject}>
+        {/* caption */}
+        <div class={captionCls} style={style} {...handlers}>
           {joint}{checkbox}{icon}{text}{extra}
+          <span class="az-tree-item__handlers">
+            {dropAsChildren}{dropAsSibling}
+            {moveNodeUp}{moveNodeDown}{deleteNode}{dragHandle}
+          </span>
         </div>
+
+        {/* children items */}
         <div class="az-tree-item__children">
-          {this.items.map((c: AzTreeItem) => c.render())}
+          {this.items.map(((c: AzTreeItem, index) => c.render(index)))}
         </div>
       </az-tree-item>
     );
   }
 
   dispose() {
-    this.el['__$stencil'] = null;
+    setInternalInstance(this.el, null);
     this.el = null;
   }
 
@@ -242,14 +346,19 @@ export class AzTreeItem implements IAzTreeItem {
     if (!el || el.items) return;
     // @ts-ignore
     this.el = el;
-    el['__stencil'] = this;
+    setInternalInstance(this.el, this);
     el.caption = this.caption;
     el.addItem = this.addItem;
     el.removeItemAt = this.removeItemAt;
     el.removeItem = this.removeItem;
-    el.remove = this.remove;
+    el.removeSelf = this.removeSelf;
     el.toggle = this.toggle;
-    el.dragging = this.dragging;
+    el.onMoveUp = this.onMoveUp;
+    el.onMoveDown = this.onMoveDown;
+    el.toJson = this.toJson;
+    el.set = this.set;
+    el.setCaption = this.setCaption;
+    el.dragover = this.dragover;
     el.items = this.items;
   }
 

@@ -3,13 +3,12 @@ az-tree {
   &:focus-visible {
     outline: none;
   }
+  .az-icon svg {
+    pointer-events: none;
+  }
   .az-tree-item {
     display: block;
     position: relative;
-    border-top: 1px solid transparent;
-    &.az-tree-item__dragover {
-      border-top: 1px solid var(--az-border-color);
-    }
     &.expanded .az-tree-item__children{
       height: auto;
       transform: scaleY(1);
@@ -31,11 +30,46 @@ az-tree {
   .hide {
     visibility: hidden;
   }
+  .az-tree-item__handlers {
+    display: none;
+  }
+  &.az-tree__item-draggable .az-tree-item__handlers {
+    display: inline-flex;
+    align-items: center;
+    .az-icon {
+      height: 16px;
+    }
+    .az-icon-drag{
+      cursor: move;
+    }
+    .az-icon-move-node-up {
+      display: none;
+      cursor: n-resize;
+    }
+    .az-icon-move-node-down {
+      display: none;
+      cursor: s-resize;
+    }
+    margin-left: auto;
+  }
+  .az-caption__wrapper {
+    width: 100%;
+    [slot=after] {
+      margin-left: auto;
+    }
+  }
+  .az-tree-item__caption.az-tree-item__dragover {
+    border: 1px dashed var(--az-border-color);
+    background-color: var(--az-tooltip-color);
+    .az-icon-new-child-node, .az-icon-new-sibling-node {
+      display: inline-flex;
+    }
+  }
   .az-tree-item__caption {
-    cursor: pointer;
     line-height: 24px;
     display: inline-flex;
     width: 100%;
+    border: 1px dashed transparent;
     .joint {
       width: 16px;
       height: 16px;
@@ -44,9 +78,18 @@ az-tree {
     }
     &:hover {
       background-color: #4e4e4e;
+      .az-icon-move-node-up {
+        display: inline-flex;
+      }
+      .az-icon-move-node-down {
+        display: inline-flex;
+      }
     }
     .az-checkbox__box {
       vertical-align: -webkit-baseline-middle;
+    }
+    .az-icon-new-child-node, .az-icon-new-sibling-node {
+      display: none;
     }
   }
 }
