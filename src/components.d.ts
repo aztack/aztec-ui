@@ -5,12 +5,14 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ComponentSize, ComponentStyle, Placement, PositionHorizontal } from "./global/typing";
+import { ComponentSize, ComponentStyle, ModifierCombinations, Placement, PositionHorizontal } from "./global/typing";
 import { ButtonConfig } from "./components/dialog/az-dialog";
 import { IFormItem } from "./components/form/az-form";
+import { AzInputType } from "./components/input/az-input";
 import { ButtonConfig as ButtonConfig1 } from "./components/notification/az-notification";
 import { TabItemConfig } from "./components/tabs/az-tabs";
 import { AzTreeItem, IAzTreeItem } from "./components/tree/az-tree-item";
+import { SerializeOptions, TreeItemVisitor } from "./components/tree/az-tree";
 export namespace Components {
     interface AzButton {
         "caption": string;
@@ -43,6 +45,7 @@ export namespace Components {
         "caption": string;
         "closedelay": number;
         "closeevent": string;
+        "modifiers": ModifierCombinations;
         "parent": string;
         "popupalign": string;
         "triggerevent": string;
@@ -78,12 +81,22 @@ export namespace Components {
         "itemValue": any;
         "limit": number;
     }
+    interface AzHr {
+        "caption": string;
+        "captionPosition": PositionHorizontal;
+        "icon": string;
+        "iconPosition": PositionHorizontal;
+    }
     interface AzIcon {
+        "caption": string;
         "color": string;
         "height": number | string;
+        "hoverEffect": 'border' | 'background' | string | undefined;
         "icon": string;
         "register": boolean;
         "svgAttr": Record<string, string>;
+        "tag": string;
+        "wait": boolean;
         "width": number | string;
     }
     interface AzInput {
@@ -99,13 +112,15 @@ export namespace Components {
         "popupalign": string;
         "readonly": boolean;
         "spellcheck": boolean;
-        "toJson": (detailed?: boolean) => Promise<{ tag: string; caption: string; value: string; } & { type: string; clearable: boolean; }>;
-        "type": string;
+        "toJson": (detailed?: boolean) => Promise<{ tag: string; caption: string; value: string; } & { type: AzInputType; clearable: boolean; }>;
+        "type": AzInputType;
         "value": string;
     }
     interface AzMenuItem {
         "action": string;
         "caption": string;
+        "extraIcon": string;
+        "extraText": string;
         "icon": string;
         "type": ComponentStyle;
     }
@@ -135,6 +150,7 @@ export namespace Components {
     interface AzProgressBar {
         "caption": string;
         "max": number;
+        "min": number;
         "value": number;
     }
     interface AzRadio {
@@ -146,11 +162,13 @@ export namespace Components {
     interface AzSection {
         "arrowPosition": 'left' | 'right';
         "caption": string;
+        "captionPosition": PositionHorizontal;
         "collapsable": boolean;
         "collapse": () => Promise<void>;
         "collapsed": boolean;
         "expand": () => Promise<void>;
         "icon": string;
+        "iconPosition": PositionHorizontal;
     }
     interface AzSelect {
     }
@@ -192,16 +210,27 @@ export namespace Components {
         "trigger": 'hover' | 'click' | 'manual';
     }
     interface AzTree {
+        "DndDataType": string;
         "activeItem": AzTreeItem;
+        "activeOnMiddleButtonDown": boolean;
         "addItem": (itemOrCaption: AzTreeItem | string, parent?: AzTreeItem | number, attrs?: any) => Promise<AzTreeItem>;
         "caption": string;
         "checkedItems": Set<AzTreeItem>;
         "clearActiveItem": () => Promise<void>;
+        "collapsAll": () => Promise<void>;
+        "expandAll": (level: number) => Promise<void>;
+        "find": (predicate: TreeItemVisitor) => Promise<any>;
+        "findAll": (predicate: TreeItemVisitor) => Promise<any[]>;
         "fromJson": (items: IAzTreeItem[]) => Promise<void>;
+        "icon": string;
+        "iconPosition": PositionHorizontal;
+        "itemDraggable": boolean;
         "items": AzTreeItem[];
-        "removeItem": (index: number) => Promise<void>;
+        "removeItem": (indexOrItem: number | AzTreeItem) => Promise<void>;
         "selecting": boolean;
         "setActiveItem": (item: AzTreeItem, clear?: boolean) => Promise<void>;
+        "toJson": (opts?: SerializeOptions) => Promise<(string | Record<keyof IAzTreeItem, any>)[]>;
+        "traverse": (visit: TreeItemVisitor) => Promise<void>;
     }
 }
 declare global {
@@ -246,6 +275,12 @@ declare global {
     var HTMLAzGroupElement: {
         prototype: HTMLAzGroupElement;
         new (): HTMLAzGroupElement;
+    };
+    interface HTMLAzHrElement extends Components.AzHr, HTMLStencilElement {
+    }
+    var HTMLAzHrElement: {
+        prototype: HTMLAzHrElement;
+        new (): HTMLAzHrElement;
     };
     interface HTMLAzIconElement extends Components.AzIcon, HTMLStencilElement {
     }
@@ -351,6 +386,7 @@ declare global {
         "az-dialog": HTMLAzDialogElement;
         "az-form": HTMLAzFormElement;
         "az-group": HTMLAzGroupElement;
+        "az-hr": HTMLAzHrElement;
         "az-icon": HTMLAzIconElement;
         "az-input": HTMLAzInputElement;
         "az-menu-item": HTMLAzMenuItemElement;
@@ -401,6 +437,8 @@ declare namespace LocalJSX {
         "caption"?: string;
         "closedelay"?: number;
         "closeevent"?: string;
+        "modifiers"?: ModifierCombinations;
+        "onHidden"?: (event: CustomEvent<any>) => void;
         "onShowed"?: (event: CustomEvent<any>) => void;
         "parent"?: string;
         "popupalign"?: string;
@@ -432,12 +470,22 @@ declare namespace LocalJSX {
         "itemValue"?: any;
         "limit"?: number;
     }
+    interface AzHr {
+        "caption"?: string;
+        "captionPosition"?: PositionHorizontal;
+        "icon"?: string;
+        "iconPosition"?: PositionHorizontal;
+    }
     interface AzIcon {
+        "caption"?: string;
         "color"?: string;
         "height"?: number | string;
+        "hoverEffect"?: 'border' | 'background' | string | undefined;
         "icon"?: string;
         "register"?: boolean;
         "svgAttr"?: Record<string, string>;
+        "tag"?: string;
+        "wait"?: boolean;
         "width"?: number | string;
     }
     interface AzInput {
@@ -452,12 +500,14 @@ declare namespace LocalJSX {
         "popupalign"?: string;
         "readonly"?: boolean;
         "spellcheck"?: boolean;
-        "type"?: string;
+        "type"?: AzInputType;
         "value"?: string;
     }
     interface AzMenuItem {
         "action"?: string;
         "caption"?: string;
+        "extraIcon"?: string;
+        "extraText"?: string;
         "icon"?: string;
         "onSelected"?: (event: CustomEvent<any>) => void;
         "type"?: ComponentStyle;
@@ -488,6 +538,7 @@ declare namespace LocalJSX {
     interface AzProgressBar {
         "caption"?: string;
         "max"?: number;
+        "min"?: number;
         "value"?: number;
     }
     interface AzRadio {
@@ -499,9 +550,11 @@ declare namespace LocalJSX {
     interface AzSection {
         "arrowPosition"?: 'left' | 'right';
         "caption"?: string;
+        "captionPosition"?: PositionHorizontal;
         "collapsable"?: boolean;
         "collapsed"?: boolean;
         "icon"?: string;
+        "iconPosition"?: PositionHorizontal;
     }
     interface AzSelect {
     }
@@ -541,13 +594,22 @@ declare namespace LocalJSX {
         "trigger"?: 'hover' | 'click' | 'manual';
     }
     interface AzTree {
+        "DndDataType"?: string;
         "activeItem"?: AzTreeItem;
+        "activeOnMiddleButtonDown"?: boolean;
         "caption"?: string;
         "checkedItems"?: Set<AzTreeItem>;
+        "icon"?: string;
+        "iconPosition"?: PositionHorizontal;
+        "itemDraggable"?: boolean;
         "items"?: AzTreeItem[];
         "onCollapsed"?: (event: CustomEvent<any>) => void;
         "onExpanded"?: (event: CustomEvent<any>) => void;
         "onInserted"?: (event: CustomEvent<any>) => void;
+        "onItemdragover"?: (event: CustomEvent<any>) => void;
+        "onItemdrop"?: (event: CustomEvent<any>) => void;
+        "onItemremoved"?: (event: CustomEvent<any>) => void;
+        "onItemremoving"?: (event: CustomEvent<any>) => void;
         "onSelected"?: (event: CustomEvent<any>) => void;
         "selecting"?: boolean;
     }
@@ -559,6 +621,7 @@ declare namespace LocalJSX {
         "az-dialog": AzDialog;
         "az-form": AzForm;
         "az-group": AzGroup;
+        "az-hr": AzHr;
         "az-icon": AzIcon;
         "az-input": AzInput;
         "az-menu-item": AzMenuItem;
@@ -588,6 +651,7 @@ declare module "@stencil/core" {
             "az-dialog": LocalJSX.AzDialog & JSXBase.HTMLAttributes<HTMLAzDialogElement>;
             "az-form": LocalJSX.AzForm & JSXBase.HTMLAttributes<HTMLAzFormElement>;
             "az-group": LocalJSX.AzGroup & JSXBase.HTMLAttributes<HTMLAzGroupElement>;
+            "az-hr": LocalJSX.AzHr & JSXBase.HTMLAttributes<HTMLAzHrElement>;
             "az-icon": LocalJSX.AzIcon & JSXBase.HTMLAttributes<HTMLAzIconElement>;
             "az-input": LocalJSX.AzInput & JSXBase.HTMLAttributes<HTMLAzInputElement>;
             "az-menu-item": LocalJSX.AzMenuItem & JSXBase.HTMLAttributes<HTMLAzMenuItemElement>;

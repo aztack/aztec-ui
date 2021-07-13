@@ -23,7 +23,7 @@
 
 ## Methods
 
-### `addItem(it: string | TabItemConfig) => Promise<void>`
+### `addItem(it: TabItemConfig | string) => Promise<void>`
 
 
 

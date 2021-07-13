@@ -7,12 +7,14 @@
 
 ## Properties
 
-| Property  | Attribute | Description | Type                                                                   | Default   |
-| --------- | --------- | ----------- | ---------------------------------------------------------------------- | --------- |
-| `action`  | `action`  |             | `string`                                                               | `''`      |
-| `caption` | `caption` |             | `string`                                                               | `''`      |
-| `icon`    | `icon`    |             | `string`                                                               | `''`      |
-| `type`    | `type`    |             | `"danger" \| "info" \| "plain" \| "primary" \| "success" \| "warning"` | `'plain'` |
+| Property    | Attribute    | Description | Type                                                                   | Default   |
+| ----------- | ------------ | ----------- | ---------------------------------------------------------------------- | --------- |
+| `action`    | `action`     |             | `string`                                                               | `''`      |
+| `caption`   | `caption`    |             | `string`                                                               | `''`      |
+| `extraIcon` | `extra-icon` |             | `string`                                                               | `''`      |
+| `extraText` | `extra-text` |             | `string`                                                               | `''`      |
+| `icon`      | `icon`       |             | `string`                                                               | `''`      |
+| `type`      | `type`       |             | `"danger" \| "info" \| "plain" \| "primary" \| "success" \| "warning"` | `'plain'` |
 
 
 ## Events

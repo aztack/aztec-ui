@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property  | Attribute | Description | Type               | Default |
-| --------- | --------- | ----------- | ------------------ | ------- |
-| `caption` | `caption` |             | `string`           | `''`    |
-| `max`     | `max`     |             | `number \| string` | `100`   |
-| `min`     | `min`     |             | `number \| string` | `0`     |
-| `value`   | `value`   |             | `number \| string` | `'50'`  |
+| Property  | Attribute | Description | Type               | Default     |
+| --------- | --------- | ----------- | ------------------ | ----------- |
+| `caption` | `caption` |             | `string`           | `''`        |
+| `max`     | `max`     |             | `number \| string` | `undefined` |
+| `min`     | `min`     |             | `number \| string` | `undefined` |
+| `value`   | `value`   |             | `number \| string` | `undefined` |
 
 
 ## Dependencies

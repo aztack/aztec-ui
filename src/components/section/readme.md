@@ -7,13 +7,15 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type                | Default      |
-| --------------- | ---------------- | ----------- | ------------------- | ------------ |
-| `arrowPosition` | `arrow-position` |             | `"left" \| "right"` | `'left'`     |
-| `caption`       | `caption`        |             | `string`            | `''`         |
-| `collapsable`   | `collapsable`    |             | `boolean`           | `true`       |
-| `collapsed`     | `collapsed`      |             | `boolean`           | `false`      |
-| `icon`          | `icon`           |             | `string`            | `'arrow-up'` |
+| Property          | Attribute          | Description | Type                            | Default        |
+| ----------------- | ------------------ | ----------- | ------------------------------- | -------------- |
+| `arrowPosition`   | `arrow-position`   |             | `"left" \| "right"`             | `'left'`       |
+| `caption`         | `caption`          |             | `string`                        | `''`           |
+| `captionPosition` | `caption-position` |             | `"center" \| "left" \| "right"` | `'left'`       |
+| `collapsable`     | `collapsable`      |             | `boolean`                       | `true`         |
+| `collapsed`       | `collapsed`        |             | `boolean`                       | `false`        |
+| `icon`            | `icon`             |             | `string`                        | `'arrow-down'` |
+| `iconPosition`    | `icon-position`    |             | `"center" \| "left" \| "right"` | `'left'`       |
 
 
 ## Methods

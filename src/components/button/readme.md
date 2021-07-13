@@ -13,7 +13,7 @@
 | `circle`       | `circle`        |             | `boolean`                                                                      | `false`     |
 | `disabled`     | `disabled`      |             | `boolean`                                                                      | `false`     |
 | `icon`         | `icon`          |             | `string`                                                                       | `''`        |
-| `iconPosition` | `icon-position` |             | `"left" \| "right"`                                                            | `'left'`    |
+| `iconPosition` | `icon-position` |             | `"center" \| "left" \| "right"`                                                | `'left'`    |
 | `round`        | `round`         |             | `boolean`                                                                      | `false`     |
 | `size`         | `size`          |             | `"extra-large" \| "extra-small" \| "large" \| "medium" \| "normal" \| "small"` | `'normal'`  |
 | `type`         | `type`          | Button type | `"danger" \| "info" \| "plain" \| "primary" \| "success" \| "warning"`         | `'primary'` |

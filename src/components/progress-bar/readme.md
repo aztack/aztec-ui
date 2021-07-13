@@ -11,6 +11,7 @@
 | --------- | --------- | ----------- | -------- | ------- |
 | `caption` | `caption` |             | `string` | `''`    |
 | `max`     | `max`     |             | `number` | `100`   |
+| `min`     | `min`     |             | `number` | `0`     |
 | `value`   | `value`   |             | `number` | `50`    |
 
 

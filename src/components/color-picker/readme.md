@@ -33,16 +33,12 @@
 
 - [az-slider](../slider)
 - [az-input](../input)
-- [az-input](../input)
 
 ### Graph
 ```mermaid
 graph TD;
   az-color-picker --> az-slider
   az-color-picker --> az-input
-  az-color-picker --> az-input
-  az-input --> az-color-picker
-  az-input --> az-icon
   az-input --> az-color-picker
   style az-color-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
