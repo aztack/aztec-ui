@@ -1,6 +1,5 @@
 import { Component, Prop, Element, Watch, Host, h, Method, Event, EventEmitter, forceUpdate} from '@stencil/core';
 import { Inject } from '../../utils';
-import { HostElement } from '@stencil/core/internal';
 
 export type TabItemConfig  = {
   caption?: string | '';
@@ -13,7 +12,7 @@ export type TabItemConfig  = {
   shadow: false
 })
 export class AzTabs {
-  @Element() el: HostElement;
+  @Element() el: HTMLElement;
 
   @Prop({mutable: true}) items: TabItemConfig[] = [];
   @Prop({reflect: true, mutable: true}) activeIndex: number = 0;
@@ -46,8 +45,8 @@ export class AzTabs {
     attrs: false,
     parse: true
   })
-  connectedCallback() {
-    this.el.componentOnReady().then(() => this.onActiveIndexChanged(this.activeIndex, 0));
+  componentDidLoad() {
+    this.onActiveIndexChanged(this.activeIndex, 0);
   }
 
   @Method()
