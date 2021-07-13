@@ -18,6 +18,10 @@ export class AzSection {
   @Prop({reflect: true}) icon: string = 'arrow-down';
   @Prop({reflect: true}) iconPosition: PositionHorizontal = 'left';
 
+  constructor() {
+    this.onClickCaption = this.onClickCaption.bind(this);
+  }
+
   @Inject({})
   componentDidLoad() {
   }
@@ -32,22 +36,23 @@ export class AzSection {
     this.collapsed = false;
   }
 
+  onClickCaption() {
+    if (this.collapsable) {
+      this.collapsed = !this.collapsed;
+    }
+  }
+
   render() {
-    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition);
+    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition, '', {onClick: this.onClickCaption});
     return (
       <section class={{
         'az-section': true,
         collapsable: this.collapsable,
         collapsed: this.collapsed
       }}>
-        <div class={{
-          header: true,
-          [`arrow-${this.arrowPosition}`]: true
-        }}>
-          <span class="az-section-caption az-caption" onClick={() => this.collapsable && (this.collapsed = !this.collapsed)}>
-            {caption}
-          </span>
-          <slot name="header"></slot>
+        <div class={`header arrow-${this.arrowPosition}`}>
+          {caption}
+          <slot name="after"></slot>
         </div>
         <div class="content">
           <slot></slot>

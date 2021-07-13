@@ -5,6 +5,9 @@ az-section section {
   background-color: var(--az-primary-color);
   font-family: var(--az-font-family);
   font-size: var(--az-font-size-normal);
+  [slot=after] {
+
+  }
   &.collapsable .header .caption:before {
     display: inline-block;
     width: 1.2em;
@@ -27,7 +30,7 @@ az-section section {
         }
       }
     }
-    .right {
+    [slot=after] {
       float: right;
       margin-left: 0.5em;
     }
