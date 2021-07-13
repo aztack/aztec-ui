@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "es2015",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "jsx": "react",
+    "jsxFactory": "React.createElement",
+
+    "outDir": "dist-transpiled",
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "baseUrl": "./src"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
