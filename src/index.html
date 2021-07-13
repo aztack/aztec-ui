@@ -182,7 +182,7 @@
   </az-icon>
   <az-panel caption="Demo" id="demo" style="max-width: 800px">
     <az-section caption="Buttons & Tabs">
-      <az-button class="small right" type="plain" size="extra-small" slot="header" onclick="alert(1)">Collapse</az-button>
+      <az-button slot="after" class="small" type="plain" size="extra-small" slot="header" onclick="alert(1)">Collapse</az-button>
       <az-tabs items="['Disabled Buttons', {caption: 'Normal', icon: 'check'}, {caption: 'Empty Tab', icon: 'bars'}, {icon: 'download', closable: true}]" active-index="1">
         <az-panel>
           <az-button class="small" icon="close" caption="Cancel" icon-position="left" disabled="disabled"></az-button>
@@ -332,16 +332,22 @@
     </az-section>
 
     <az-section caption="Tree" icon-position="right" icon="dir-tree" collapsable="true">
-      <az-tree id="tree1" caption="Tree Demo" selecting="true" item-draggable="true"></az-tree>
-      <br/>
+      <az-tree id="tree1" caption="Tree Demo" selecting="true" item-draggable="true">
+        <az-checkbox slot="after" caption="Editable" checked="true"></az-checkbox>
+        <az-contextual-menu id="tree1ContextMenu">
+          <az-menu-item caption="Add" action="add" icon="plus"></az-menu-item>
+          <az-menu-item caption="-"></az-menu-item>
+          <az-menu-item caption="Delete" action="delete" icon="close" extra-text="⌫"></az-menu-item>
+          <az-menu-item caption="Save" action="save" icon="floppy-disk" extra-text="⌘S"></az-menu-item>
+          <az-menu-item caption="Export" action="export" icon="download"></az-menu-item>
+        </az-contextual-menu>
+      </az-tree>
+      <br />
+      <az-input id="newItemCaption" caption="New item" value="五边形"></az-input>
+      <az-button id="addNewItem" caption="Add"></az-button>
+      <az-button id="setItemCaption" caption="Set"></az-button>
+      <az-hr></az-hr>
       <az-tree id="tree2" caption="Files" icon="open-folder" icon-position="left"></az-tree>
-      <az-contextual-menu>
-        <az-menu-item caption="Add" action="add" icon="plus"></az-menu-item>
-        <az-menu-item caption="-"></az-menu-item>
-        <az-menu-item caption="Delete" action="delete" icon="close"></az-menu-item>
-        <az-menu-item caption="Save" action="save" icon="floppy-disk"></az-menu-item>
-        <az-menu-item caption="Export" action="export" icon="download"></az-menu-item>
-      </az-contextual-menu>
     </az-section>
     <az-section caption="Toolbar">
       <az-toolbar>
@@ -495,6 +501,30 @@
   </az-panel>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', async () => {
+      tree1.querySelector('[slot=after]').addEventListener('changed', (e) => {
+        tree1.itemDraggable = !tree1.itemDraggable;
+      });
+
+      addNewItem.addEventListener('click', () => {
+        tree1.addItem(newItemCaption.value, tree1.activeItem);
+      });
+      setItemCaption.addEventListener('click', () => {
+        tree1.activeItem?.setCaption(newItemCaption.value);
+      });
+
+      tree1ContextMenu.addEventListener('selected', async e => {
+        switch (e.detail) {
+          case 'delete':
+            tree1.activeItem.removeSelf();
+            break;
+          case 'add':
+            tree1.addItem(newItemCaption.value, tree1.activeItem);
+            break;
+          case 'export':
+            console.dir(await tree1.toJson());
+            break;
+        }
+      });
       // colors
       tree1.addItem('Colors', null, {icon: 'check', expanded: false});
       let t = await tree1.addItem('Red', 0);
@@ -510,11 +540,14 @@
       t = await tree1.addItem('Purple', 0);
       tree1.addItem('紫色', t);
       // shapes
-      tree1.addItem('Shapes', null, {icon: 'book', expanded: false});
+      tree1.addItem('Shapes', null, {icon: 'book', expanded: true});
+      tree1.addItem('Circle', 1);
       tree1.addItem('Triangle', 1);
       tree1.addItem('Rectange', 1);
+      tree1.addItem('Pentagon', 1, {active: true});
+      tree1.addItem('Hexagon', 1);
       // contries
-      tree1.addItem('Countries', null, {icon: 'fort', expanded: true});
+      tree1.addItem('Countries', null, {icon: 'fort', expanded: false});
       const china = await tree1.addItem('🇨🇳China', 2);
       tree1.addItem('Beijing', china);
       const korea = await tree1.addItem('🇰🇷Korea', 2);
