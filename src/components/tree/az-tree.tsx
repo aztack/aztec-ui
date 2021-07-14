@@ -44,7 +44,7 @@ export class AzTree {
   @Prop({mutable: true}) activeItem: AzTreeItem = null;
   @Prop({reflect: true}) itemDraggable: boolean = false;
   @Prop({reflect: true}) activeOnMiddleButtonDown: boolean = true;
-  @Prop({reflect: true}) DndDataType: string = 'application/json';
+  @Prop({reflect: true}) dndDataType: string = 'application/json';
 
   @Event() selected: EventEmitter;
   @Event() expanded: EventEmitter;
@@ -267,7 +267,7 @@ export class AzTree {
     this.draggingEl = /*@__INLINE__*/closestTreeItem(e);
     this.dragOverEl = this.draggingEl;
     const data = asTreeItem(this.draggingEl).toJson({recursive: true, asString: true}) as string;
-    e.dataTransfer.setData(this.DndDataType, data);
+    e.dataTransfer.setData(this.dndDataType, data);
     e.dataTransfer.effectAllowed = (e.metaKey || e.ctrlKey) ? 'copy' : 'move';
     log('dragstart', this.draggingEl['caption']);
   }
@@ -324,7 +324,7 @@ export class AzTree {
   }
 
   onDrop(e: DragEvent) {
-    const data = e.dataTransfer.getData(this.DndDataType);
+    const data = e.dataTransfer.getData(this.dndDataType);
     const item = closestTreeItem(e);
     this.lastDropEl = item;
     const action = this.action || 'new-child-node';
@@ -400,7 +400,7 @@ export class AzTree {
   private hasDndData(e: DragEvent) {
     return e.dataTransfer
       && Array.prototype.filter.call(e.dataTransfer.items, (it: DataTransferItem) => {
-        return it.type === this.DndDataType;
+        return it.type === this.dndDataType;
       });
   }
 }
