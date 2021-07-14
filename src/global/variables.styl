@@ -33,6 +33,10 @@
   --az-disabled-color-comps: rgb(130, 130, 130);
   --az-invalid-color: #fb7e7e
   --az-invalid-color-comps: rgb(251, 126, 126);
+  --az-input-bg-color: #252525;
+  --az-input-bg-color-comps: rgb(37 37 37);
+  --az-scrollbar-bg-color: #0000001a;
+  --az-scrollbar-bg-color-comps: rgba(0, 0, 0, 0.1);
 
   --az-plain-color: #ddd;
   --az-plain-color-comps: rgb(221, 221, 221);
@@ -91,6 +95,21 @@
 
 .az-anim-loading {
   animation: az-anim-spin 1s infinite linear;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: var(--az-primary-color);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--az-scrollbar-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--az-border-color);
+  border-radius: 2px;
 }
 
 @keyframes az-anim-spin {
