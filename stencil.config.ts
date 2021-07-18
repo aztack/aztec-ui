@@ -5,8 +5,7 @@ export const config: Config = {
   namespace: 'aztec-ui',
   outputTargets: [
     {
-      type: 'dist',
-      esmLoaderPath: '../loader'
+      type: 'dist'
     },
     {
       type: 'docs-readme'
