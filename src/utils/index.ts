@@ -49,7 +49,19 @@ export function parseArrayObjectAttr(ctx: any, host: HTMLElement) {
     const hypenized = decamelize(k);
     if (!host.hasAttribute(hypenized)) return;
     if (Array.isArray(ctx[k]) || isPlainObject(ctx[k])) {
-      ctx[k] = safeEval(host.getAttribute(hypenized));
+      const attrVal = host.getAttribute(hypenized);
+      try {
+        ctx[k] = safeEval(attrVal);
+      } catch (e) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Fail to saveEval`, attrVal);
+        }
+        try {
+          ctx[k] = JSON.parse(attrVal);
+        } catch (e) {
+          console.error(`Fail to parse`, attrVal);
+        }
+      }
     }
   });
 }
@@ -144,6 +156,15 @@ export function Inject (opts: IInjectOptions = makeInjectOpts()) {
           return fn;
         }
         const boundFn = function (...args) {
+          if (window.aztec && window.aztec.debug.inject) {
+            observerAttributes(this.el, (mutation: MutationRecord) => {
+              if (mutation.attributeName === 'class') return;
+              const el = mutation.target as HTMLElement;
+              console.groupCollapsed(el.tagName, mutation.attributeName, mutation.oldValue, el.getAttribute(mutation.attributeName));
+              console.log(el);
+              console.groupEnd();
+            });
+          }
           if (opts.after) fn.apply(this, args); // inject after constructor
 
           // do injection
@@ -155,6 +176,15 @@ export function Inject (opts: IInjectOptions = makeInjectOpts()) {
 
           // for debugging
           this.el.__$stencil = this;
+          let _dispose;
+          if (typeof this.dispose === 'function') {
+            _dispose = this.dispose;
+          }
+          this.dispose = function (...args) {
+            _dispose.call(this, ...args)
+            this.el.__$stencil = null;
+            delete this.el.__$stencil;
+          };
 
           if (!opts.after) fn.apply(this, args); // inject before constructor
 
@@ -194,12 +224,14 @@ export function Inject (opts: IInjectOptions = makeInjectOpts()) {
 
 declare global {
   interface Window {
-    aztec: object;
+    aztec: object & {
+      debug: Record<string, boolean>
+    };
   }
 }
 
 export function exportToGlobal(name: string, desc: object | Function) {
-  if (typeof window.aztec === 'undefined') window.aztec = {};
+  if (typeof window.aztec === 'undefined') window.aztec = {debug: {}};
   if (typeof desc === 'function') {
     window.aztec[name] = desc;
   } else {
@@ -211,12 +243,16 @@ export function exportToGlobal(name: string, desc: object | Function) {
   }
 }
 
+import { forceUpdate } from '@stencil/core/internal';
 import version from '../version';
+import { observerAttributes } from './helper';
 import { isNumber, isPlainObject, safeEval, get, set, stringToPath } from './lang';
 import { decamelize } from './strings';
 
 export * from './lang';
 export * from './strings';
+export * from './helper';
+export * from './next-tick';
 
 exportToGlobal('version', {
   get() {
@@ -234,6 +270,7 @@ exportToGlobal('utils', {
       get,
       set,
       isNumber,
+      forceUpdate,
       stringToPath
     };
   }
