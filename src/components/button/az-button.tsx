@@ -1,6 +1,6 @@
 import { Component, Prop, Element, h } from '@stencil/core';
 import { ComponentStyle, ComponentSize, PositionHorizontal } from '../../global/typing';
-import { Inject } from '../../utils';
+// import { Inject } from '../../utils';
 
 @Component({
   tag: 'az-button',
@@ -21,11 +21,11 @@ export class AzButton {
   @Prop({reflect: true}) iconPosition: PositionHorizontal = 'left';
   @Prop({reflect: true}) disabled: boolean = false;
 
-  @Inject({
-    attrs: true,
-    remove: true,
-    keep: ['caption', 'type', 'size', 'icon', 'icon-position', 'round', 'disabled', 'circle', 'style']
-  })
+  // @Inject({
+  //   attrs: true,
+  //   remove: true,
+  //   keep: ['caption', 'type', 'size', 'icon', 'icon-position', 'round', 'disabled', 'circle', 'style']
+  // })
   componentDidLoad() {
     if (!this.type) this.type = 'primary';
     if (!this.size) this.size = 'normal';
