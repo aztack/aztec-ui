@@ -25,6 +25,7 @@ export class AzTabs {
 
   @Watch('activeIndex')
   onActiveIndexChanged(newIndex: number, oldIndex: number) {
+    if (newIndex === oldIndex) return;
     const slot = this.contentEl as HTMLElement;
     const children = slot.children;
     if (!children || children.length === 0) return;
@@ -42,9 +43,11 @@ export class AzTabs {
 
   @Inject({
     after: true,
-    attrs: false,
+    attrs: true,
     parse: true
   })
+  componentWillLoad() {}
+
   componentDidLoad() {
     this.onActiveIndexChanged(this.activeIndex, 0);
   }
@@ -114,5 +117,5 @@ function toTabItemConfig (it: TabItemConfig | string) {
   } if ('caption' in it || 'icon' in it) {
     return it;
   }
-  throw new Error(`<az-tab> item requires at lease one of 'caption' or 'icon' must be provide, but got ${JSON.stringify(it)}`);
+  throw new Error(`<az-tab> item requires at lease one of 'caption' or 'icon', but got ${JSON.stringify(it)}`);
 }
