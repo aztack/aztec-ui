@@ -43,7 +43,8 @@ export class AzSection {
   }
 
   render() {
-    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition, '', {onClick: this.onClickCaption});
+    const caption = getCaptionWithIcon(this.caption, this.icon, this.iconPosition,
+      'az-section-caption', {onClick: this.onClickCaption});
     return (
       <section class={{
         'az-section': true,
