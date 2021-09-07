@@ -210,7 +210,6 @@ export namespace Components {
         "trigger": 'hover' | 'click' | 'manual';
     }
     interface AzTree {
-        "DndDataType": string;
         "activeItem": AzTreeItem;
         "activeOnMiddleButtonDown": boolean;
         "addItem": (itemOrCaption: AzTreeItem | string, parent?: AzTreeItem | number, attrs?: any) => Promise<AzTreeItem>;
@@ -218,6 +217,7 @@ export namespace Components {
         "checkedItems": Set<AzTreeItem>;
         "clearActiveItem": () => Promise<void>;
         "collapsAll": () => Promise<void>;
+        "dndDataType": string;
         "expandAll": (level: number) => Promise<void>;
         "find": (predicate: TreeItemVisitor) => Promise<any>;
         "findAll": (predicate: TreeItemVisitor) => Promise<any[]>;
@@ -594,11 +594,11 @@ declare namespace LocalJSX {
         "trigger"?: 'hover' | 'click' | 'manual';
     }
     interface AzTree {
-        "DndDataType"?: string;
         "activeItem"?: AzTreeItem;
         "activeOnMiddleButtonDown"?: boolean;
         "caption"?: string;
         "checkedItems"?: Set<AzTreeItem>;
+        "dndDataType"?: string;
         "icon"?: string;
         "iconPosition"?: PositionHorizontal;
         "itemDraggable"?: boolean;
