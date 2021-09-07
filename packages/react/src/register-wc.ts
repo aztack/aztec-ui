@@ -1,4 +1,4 @@
-import { defineCustomElements, JSX as LocalJSX } from "aztec-ui/loader";
+import { defineCustomElements, JSX as LocalJSX } from "aztec-ui/dist/loader";
 import { HTMLAttributes } from 'react';
 
 type StencilToReact<T> = {

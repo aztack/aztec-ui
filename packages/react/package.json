@@ -2,8 +2,7 @@
   "name": "aztec-ui-react",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "main": "dist-transpiled/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "npm run clean && npm run compile",
