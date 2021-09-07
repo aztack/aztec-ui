@@ -4,8 +4,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export default {
   input: {
-    index: 'dist-transpiled/index',
-    // 'routing/index': 'dist-transpiled/routing/index'
+    index: 'dist-transpiled/index'
   },
   output: [
     {
@@ -25,7 +24,6 @@ export default {
   external: (id) => !/^(\.|\/)/.test(id),
   plugins: [
     resolve(),
-    sourcemaps(),
-    // json()
-  ],
+    sourcemaps()
+  ]
 };
