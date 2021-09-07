@@ -1,6 +1,6 @@
 import { Component, Prop, Element, Host, h} from '@stencil/core';
 import builtinIcons from './builtin';
-import { exportToGlobal, Inject, join } from '../../utils';
+import { exportToGlobal, Inject, join, nextTick } from '../../utils';
 import { forceUpdate, JSXBase } from '@stencil/core/internal';
 const eventBus = document.createElement('div');
 const RegisterIconEvent = 'registericon';
@@ -31,6 +31,7 @@ export class AzIcon {
 
   waitIconName: string = '';
   loaded: boolean = false;
+  cloned: SVGElement;
 
   @Inject({
     parse: true
@@ -38,9 +39,13 @@ export class AzIcon {
   componentWillLoad() {
     this.loaded = !!AzIcon.icons[this.icon];
     if (this.register && this.icon) {
-      registerIcon(this.icon, this.el.textContent);
+      registerIcon(this.icon, this.el.children[0] instanceof SVGElement ? this.el.children[0] : this.el.textContent);
     }
     this.onRegisterIcon = this.onRegisterIcon.bind(this);
+  }
+
+  disconnectedCallback() {
+    this.cloned = null;
   }
 
   onRegisterIcon(e: CustomEvent) {
@@ -67,40 +72,47 @@ export class AzIcon {
         this.waitIconName = this.icon;
         eventBus.addEventListener(RegisterIconEvent, this.onRegisterIcon);
       }
+    } else if (icon instanceof SVGElement) {
+      if (this.cloned) this.cloned.remove();
+      this.cloned = icon.cloneNode(true) as SVGElement;
+      nextTick(() => {
+        const placeholder = this.el.querySelector('.az-icon__placeholder');
+        if (placeholder) {
+          placeholder.replaceWith(this.cloned);
+        } else if (process.env.NODE_ENV === 'development') {
+          console.error(`Can not find placeholder for icon=${this.icon}`);
+        }
+      });
     }
     const effect = this.hoverEffect ? join(this.hoverEffect, 'az-effect-') : '';
     const anim = (!this.loaded) ? 'loading' : this.icon;
+
     return <Host class={`az-icon az-icon-${this.icon} az-anim-${anim} ${effect}`}>
       {this.caption && <span class="az-button-caption az-caption">{this.caption}</span>}
       <slot name="before"></slot>
-      {icon(this.width, this.height, this.svgAttr.fill || this.color, this.svgAttr)}
+      {icon instanceof SVGElement
+        ? <i class="az-icon__placeholder"></i>
+        : icon(this.width, this.height, this.svgAttr.fill || this.color, this.svgAttr)
+      }
       <slot name="after"></slot>
     </Host>;
   }
 }
 
-function svgIcon(d: string | string[] | SVGElement) {
+function svgIcon(d: string | string[]) {
   return (width: string, height: string, fill: string, props?: SVGAttributes) => {
-    let data;
-    if (d instanceof SVGElement) {
-      if (width != null) width = d.getAttribute('width');
-      if (height != null) height = d.getAttribute('height');
-      if (fill != null) fill = d.getAttribute('fill');
-      data = d.innerHTML;
-    } else {
-      data = (Array.isArray(d) ? d : [d]).map(p => {
-        return <path fill={fill} d={p}></path>
-      });
-    }
+    let data = (Array.isArray(d) ? d : [d]).map(p => {
+      return <path fill={fill} d={p}></path>
+    });
     return <svg class="icon" xmlns="http://www.w3.org/2000/svg"
-      width={width} height={height} {...props} viewBox="0 0 1024 1024">
+      width={width} height={height} viewBox="0 0 1024 1024" {...props}>
       {data}
     </svg>
   };
 }
 
 function registerIcon(name: string, data: string | Function | SVGElement) {
-  AzIcon.icons[name] = data instanceof Function ? data : svgIcon(data);
+  AzIcon.icons[name] = typeof data === 'string' ? svgIcon(data) : data;
   const event = new CustomEvent(RegisterIconEvent, { detail: name });
   eventBus.dispatchEvent(event);
   if (process.env.NODE_ENV) {
