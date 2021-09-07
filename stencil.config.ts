@@ -5,7 +5,7 @@ export const config: Config = {
   namespace: 'aztec-ui',
   outputTargets: [
     {
-      type: 'dist'
+      type: 'dist',
     },
     {
       type: 'docs-readme'
@@ -18,5 +18,6 @@ export const config: Config = {
   plugins: [
     stylus()
   ],
+  globalScript: 'src/global/global-script.ts',
   globalStyle: 'src/global/variables.styl'
 };
