@@ -222,15 +222,8 @@ export function Inject (opts: IInjectOptions = makeInjectOpts()) {
   }
 }
 
-declare global {
-  interface Window {
-    aztec: object & {
-      debug: Record<string, boolean>
-    };
-  }
-}
-
 export function exportToGlobal(name: string, desc: object | Function) {
+  // @ts-ignore
   if (typeof window.aztec === 'undefined') window.aztec = {debug: {}};
   if (typeof desc === 'function') {
     window.aztec[name] = desc;
@@ -270,6 +263,7 @@ exportToGlobal('utils', {
       get,
       set,
       isNumber,
+      isPlainObject,
       forceUpdate,
       stringToPath
     };

@@ -1,4 +1,10 @@
-import { PermutationOfCombination } from "../utils/type-utils";
+import { forceUpdate } from '@stencil/core';
+
+import { AzDialog } from '../components/dialog/az-dialog';
+import { AzIcon } from '../components/icons/az-icon';
+import { AzNotification } from '../components/notification/az-notification';
+import { get, isNumber, isPlainObject, set, stringToPath } from '../utils';
+import { PermutationOfCombination } from '../utils/type-utils';
 
 export type ComponentStyle = 'plain' | 'primary' | 'success' | 'info' | 'warning' | 'danger';
 export type ComponentSize = 'extra-small' | 'small' | 'normal' | 'medium' | 'large' | 'extra-large';
@@ -39,3 +45,32 @@ export enum MouseButton {
 };
 
 export type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
+declare global {
+  export interface Window {
+    aztec: object & {
+      // utils/index.ts
+      version: string,
+      HTMLInputElementSpecialAttrs: string[],
+      utils: {
+        get: typeof get,
+        set: typeof set,
+        isNumber: typeof isNumber
+        isPlainObject: typeof isPlainObject,
+        forceUpdate: typeof forceUpdate;
+        stringToPath: typeof stringToPath,
+      },
+      debug: Record<string, boolean>,
+
+      icons: string[],
+      registerIcon: typeof AzIcon['registerIcon']
+      aliasIcon: typeof AzIcon['aliasIcon'],
+      deleteIcon: typeof AzIcon['deleteIcon'],
+      renameIcon: typeof AzIcon['renameIcon'],
+
+      // az-dialog.tsx
+      Dialog: typeof AzDialog
+      // az-notification.tsx
+      Notification: typeof AzNotification
+    };
+  }
+}

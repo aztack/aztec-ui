@@ -1,3 +1,4 @@
 if (typeof window.aztec === 'undefined') {
-    window.aztec = {debug: {}};
+  // @ts-ignore
+  window.aztec = {debug: {}};
 }
