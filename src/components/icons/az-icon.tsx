@@ -17,6 +17,11 @@ export class AzIcon {
     return all;
   }, {});
 
+  static registerIcon = registerIcon;
+  static aliasIcon = aliasIcon;
+  static deleteIcon = deleteIcon;
+  static renameIcon = renameIcon;
+
   @Element() el: HTMLElement;
   @Prop() caption: string = '';
   @Prop() icon: string = '';
