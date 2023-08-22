@@ -2,17 +2,14 @@
 import {
   AzButton, AzCheckbox, AzColorPicker, AzContextualMenu, AzDialog, AzForm, AzHr, AzIcon, AzInput,
   AzMenuItem, AzNotification, AzPanel, AzProgressBar, AzSection, AzSelect, AzSlider, AzSplitter,
-  AzTabs, AzToolbar, AzTooltip, AzTree
+  AzSwitch, AzTabs, AzToolbar, AzTooltip, AzTree, AzGroup, AzRadio
 } from 'aztec-ui-react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 function App() {
   return <>
-    <Buttons_and_Tabs />
-    <Selects />
-    <Checkbox_Switch_Radio />
-    <Inputs />
+    <ButtonsAndTabs />;
     <Icons />
     <Trees />
     <Toolbars />
@@ -27,18 +24,17 @@ function App() {
   </>
 }
 
-
-
 const Center: React.FC = (props) => {
   const s = {textAlign: 'center' } as const;
   return <span style={s}>{props.children}</span>;
 }
+
 const onClickShowNotificationButton = (placement: string) => {
   const type = ['success', 'info', 'warning', 'danger'][Math.floor(Math.random() * 4)];
-  window.aztec.Notification[type](placement, 'Message', placement, 3000);
+  aztec.Notification[type](placement, 'Message', placement, 3000);
 }
 const marginRight = {marginRight: '1em'};
-const Buttons_and_Tabs: React.FC = () => {
+const ButtonsAndTabs: React.FC = () => {
   return <AzSection caption="Buttons & Tabs">
     <AzButton class="small right" type="plain" size="extra-small" slot="header" onClick={() => alert(1)}>Collapse</AzButton>
     <AzTabs items="[{caption:'Disabled Buttons'}, {caption: 'Normal', icon: 'check'}, {caption: 'Empty Tab', icon: 'bars'}, {icon: 'download', closable: true}]" active-index="1">
@@ -56,59 +52,20 @@ const Buttons_and_Tabs: React.FC = () => {
         <br/>
         <AzCheckbox caption="Disable all buttons" id="disableAllButtons"></AzCheckbox>
       </AzPanel>
-      <AzPanel>
-        This is a empty panel
-      </AzPanel>
-      <AzPanel>
-        Tab with only icon
-      </AzPanel>
+      <AzPanel> This is a empty panel </AzPanel>
+      <AzPanel> Tab with only icon </AzPanel>
     </AzTabs>
   </AzSection>
 }
 const Inputs: React.FC = () => {
   return <AzSection caption="Input" arrow-position="right">
-    <AzInput
-      type="text"
-      caption="Text"
-      value="with caption"
-      autocomplete="off"
-    />
-    <AzInput
-      type="text"
-      caption="Placeholder"
-      placeholder="placeholder"
-      autocomplete="off"
-    />
-    <AzInput
-      type="text"
-      caption="Clearable"
-      placeholder="placeholder"
-      value="clearable"
-      clearable={true}
-      autocomplete="off"
-    />
-    <br />
-    <br />
-    <AzInput
-      type="number"
-      caption="Number"
-      constrain
-      min={0}
-      max={500}
-      placeholder="placeholder"
-      value="1"
-      clearable={true}
-      autocomplete="off"
-    />
-    <br />
-    <br />
-    <AzInput
-      type="color-picker"
-      placeholder="placeholder"
-      value="red"
-      clearable={true}
-      autocomplete="off"
-    />
+    <AzInput type="text" caption="Text" value="with caption" autocomplete="off" />
+    <AzInput type="text" caption="Placeholder" placeholder="placeholder" autocomplete="off" />
+    <AzInput type="text" caption="Clearable" placeholder="placeholder" value="clearable" clearable={true} autocomplete="off" />
+    <br /> <br />
+    <AzInput type="number" caption="Number" constrain min={0} max={500} placeholder="placeholder" value="1" clearable={true} autocomplete="off" />
+    <br /> <br />
+    <AzInput type="color-picker" placeholder="placeholder" value="red" clearable={true} autocomplete="off" />
   </AzSection>
 }
 
@@ -121,27 +78,27 @@ const Selects: React.FC = () => {
   </AzSection>
 }
 
-const Checkbox_Switch_Radio: React.FC = () => {
+const CheckboxSwitchRadio: React.FC = () => {
   return <AzSection caption="Checkbox & Switch & Radio" arrow-position="right">
     <AzCheckbox slot="after" class="right">Checkbox</AzCheckbox>
     <AzCheckbox checked={true}>Beijing</AzCheckbox>
     <AzCheckbox>Shanghai</AzCheckbox>
     <br />
     <br />
-    <az-switch caption="Plain" type="plain" value={true} style={{marginRight: '1em'}} />
-    <az-switch caption="Success" type="success" value={true} style={{marginRight: '1em'}} />
-    <az-switch caption="Warning" type="warning" value={true} style={{marginRight: '1em'}} />
-    <az-switch caption="Danger" type="danger" value={true} style={{marginRight: '1em'}} />
-    <az-switch caption="Info" type="info" value={true} style={{marginRight: '1em'}} />
+    <AzSwitch caption="Plain" type="plain" value={true} style={{marginRight: '1em'}} />
+    <AzSwitch caption="Success" type="success" value={true} style={{marginRight: '1em'}} />
+    <AzSwitch caption="Warning" type="warning" value={true} style={{marginRight: '1em'}} />
+    <AzSwitch caption="Danger" type="danger" value={true} style={{marginRight: '1em'}} />
+    <AzSwitch caption="Info" type="info" value={true} style={{marginRight: '1em'}} />
     <br />
     <br />
-    <az-group limit={3}>
-      <az-radio caption="plain" checked={true} type="plain" />
-      <az-radio caption="success" checked={true} type="success" />
-      <az-radio caption="warning" checked={true} type="warning" />
-      <az-radio caption="danger" checked={true} type="danger" />
-      <az-radio caption="info" checked={true} type="info" />
-    </az-group>
+    <AzGroup limit={3}>
+      <AzRadio caption="plain" checked={true} type="plain" />
+      <AzRadio caption="success" checked={true} type="success" />
+      <AzRadio caption="warning" checked={true} type="warning" />
+      <AzRadio caption="danger" checked={true} type="danger" />
+      <AzRadio caption="info" checked={true} type="info" />
+    </AzGroup>
   </AzSection>
 }
 
@@ -433,9 +390,7 @@ const Notifications: React.FC = () => {
     <AzButton caption="bottom-center" onClick={() => onClickShowNotificationButton('bottom-center')}/>
     <AzButton caption="left-center" onClick={() => onClickShowNotificationButton('left-center')}/>
     <AzButton caption="center" onClick={() => onClickShowNotificationButton('center')}/>
-    <AzButton caption="toast"
-      onClick={() => window['aztec'] && window['aztec'].Notification.toast('Toast Message')}
-    />
+    <AzButton caption="toast" onClick={() => aztec.Notification.toast('Toast Message')} />
   </AzSection>
 }
 
@@ -446,6 +401,5 @@ const Forms: React.FC = () => {
     </AzForm>
   </AzSection>
 }
-
 
 ReactDOM.render(<App/>, document.getElementById('app'));

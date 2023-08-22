@@ -1,0 +1,1 @@
+{"version":3,"file":"register-wc.js","sourceRoot":"","sources":["../src/register-wc.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,oBAAoB,EAAmB,MAAM,sBAAsB,CAAC;AAQ7E,MAAM,CAAC,MAAM,QAAQ,GAAW;IAC9B,KAAK,CAAC,OAAO,CAAC,CAAM;QAClB,IAAI,OAAQ,MAAc,KAAK,WAAW,EAAE;YAC1C,MAAM,oBAAoB,CAAC,MAAM,CAAC,CAAC;SACpC;IACH,CAAC;CACF,CAAC"}

@@ -47,7 +47,7 @@ export enum MouseButton {
 export type MouseOrKeyboardEvent = MouseEvent | KeyboardEvent;
 declare global {
   export interface Window {
-    aztec: object & {
+    aztec: {
       // utils/index.ts
       version: string,
       HTMLInputElementSpecialAttrs: string[],
@@ -73,4 +73,5 @@ declare global {
       Notification: typeof AzNotification
     };
   }
+  export const aztec: Window['aztec'];
 }

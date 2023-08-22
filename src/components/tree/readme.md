@@ -9,11 +9,11 @@
 
 | Property                   | Attribute                      | Description | Type                            | Default                 |
 | -------------------------- | ------------------------------ | ----------- | ------------------------------- | ----------------------- |
-| `DndDataType`              | `dnd-data-type`                |             | `string`                        | `'application/json'`    |
 | `activeItem`               | --                             |             | `AzTreeItem`                    | `null`                  |
 | `activeOnMiddleButtonDown` | `active-on-middle-button-down` |             | `boolean`                       | `true`                  |
 | `caption`                  | `caption`                      |             | `string`                        | `''`                    |
 | `checkedItems`             | --                             |             | `Set<AzTreeItem>`               | `new Set<AzTreeItem>()` |
+| `dndDataType`              | `dnd-data-type`                |             | `string`                        | `'application/json'`    |
 | `icon`                     | `icon`                         |             | `string`                        | `undefined`             |
 | `iconPosition`             | `icon-position`                |             | `"center" \| "left" \| "right"` | `'left'`                |
 | `itemDraggable`            | `item-draggable`               |             | `boolean`                       | `false`                 |

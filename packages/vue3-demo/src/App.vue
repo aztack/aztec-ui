@@ -1,37 +1,20 @@
 <template>
   <AzPanel caption="Demo" id="demo" style="max-width: 800px">
-    <AzSection caption="Buttons & Tabs">
-      <AzButton className="small right" type="plain" size="extra-small" slot="after" @click="onClick">Collapse</AzButton>
-      <AzTabs items="[{caption:'Disabled Buttons'}, {caption: 'Normal', icon: 'check'}, {caption: 'Empty Tab', icon: 'bars'}, {icon: 'download', closable: true}]" active-index="1">
-        <AzPanel>
-          <AzButton className="small" icon="close" caption="Cancel" icon-position="left" :disabled="true"></AzButton>
-      </AzPanel>
-        <AzPanel id="buttons" direction="horizontal">
-          <AzButton :style="marginRight" type="plain" size="extra-small" caption="Extra Small"></AzButton>
-          <AzButton :style="marginRight" type="primary" size="small" caption="Small" icon="book"></AzButton>
-          <AzButton :style="marginRight" type="success" size="normal" caption="Normal" icon="loading" id="loadingBtn"></AzButton>
-          <AzButton :style="marginRight" type="warning" size="medium" caption="Medium" icon="download" id="downloadBtn" icon-position="right"></AzButton>
-          <AzButton :style="marginRight" type="danger" size="large" caption="Large" icon="close"></AzButton>
-          <AzButton :style="marginRight" type="info" size="extra-large" caption="Extra Large" icon="cog"></AzButton>
-          <br/>
-          <br/>
-          <az-checkbox caption="Disable all buttons" id="disableAllButtons"></az-checkbox>
-        </AzPanel>
-        <AzPanel>
-          This is a empty panel
-        </AzPanel>
-        <AzPanel>
-          Tab with only icon
-        </AzPanel>
-      </AzTabs>
-    </AzSection>
-
-    <AzSection caption="Select">
-      <AzSelect>
-        <option value="primary">Primary</option>
-        <option value="success">Success</option>
-      </AzSelect>
-    </AzSection>
+    <Buttons_and_Tabs />
+    <Selects />
+    <Checkbox_Switch_Radio />
+    <Inputs />
+    <Icons />
+    <Trees />
+    <Toolbars />
+    <Sliders />
+    <ColorPickers />
+    <Dialogs />
+    <Tooltips />
+    <ProgressBars />
+    <Splitters />
+    <Notifications />
+    <Forms />
 
     <AzSection caption="Checkbox & Switch & Radio" arrow-position="right">
       <AzCheckbox slot="after" class="right">Checkbox</AzCheckbox>
@@ -73,6 +56,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Icons from './Icons.vue';
+import Buttons_and_Tabs from './Buttons_and_Tabs.vue';
+import Selects from './Selects.vue';
 
 import 'aztec-ui/dist/aztec-ui/aztec-ui.css'
 import {
@@ -98,6 +83,8 @@ const App = defineComponent({
   },
   components: {
     Icons,
+    Buttons_and_Tabs,
+    Selects,
     AzTabs,
     AzRadio,
     AzPanel,
